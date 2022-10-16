@@ -2,15 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:oobdex/models/all_items.dart';
-import 'package:oobdex/models/all_locations.dart';
-import 'package:oobdex/models/all_moves.dart';
-import 'package:oobdex/models/all_ooblets.dart';
-import 'package:oobdex/models/api_image.dart';
-import 'package:oobdex/models/item.dart';
-import 'package:oobdex/models/location.dart';
-import 'package:oobdex/models/move.dart';
-import 'package:oobdex/models/ooblet.dart';
+import 'package:oobdex/models/api_data.dart';
 import 'package:oobdex/utils/api.dart';
 
 void main() {

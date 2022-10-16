@@ -1,15 +1,11 @@
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'move.dart';
+part of 'api_data.dart';
 
 @sealed
 @immutable
 class SignatureMoveList {
   final List<SignatureMove> elements;
 
-  SignatureMoveList.fromJson(Map<String, dynamic> json)
+  SignatureMoveList._fromJson(Map<String, dynamic> json)
       : elements = List.unmodifiable(
           json.entries
               .map((entry) => SignatureMove._(entry.key, entry.value))

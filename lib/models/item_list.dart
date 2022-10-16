@@ -1,15 +1,11 @@
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'item.dart';
+part of 'api_data.dart';
 
 @sealed
 @immutable
 class ItemList {
   final List<ItemListElement> elements;
 
-  ItemList.fromJson(Map<String, dynamic> json)
+  ItemList._fromJson(Map<String, dynamic> json)
       : elements = List.unmodifiable(
           json.entries
               .map((entry) => ItemListElement._(entry.key, entry.value)),

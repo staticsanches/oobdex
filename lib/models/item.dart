@@ -1,10 +1,4 @@
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'api_image.dart';
-import 'i18n_string.dart';
-import 'item_list.dart';
-import 'location.dart';
+part of 'api_data.dart';
 
 enum ItemType {
   cookedFood('cooked_food'),
@@ -29,12 +23,12 @@ abstract class Item implements ApiData {
   final I18nString name;
   final I18nString description;
 
-  Item._fromJson(Map<String, dynamic> json)
+  Item._fromJsonInternal(Map<String, dynamic> json)
       : id = json['id'],
         name = I18nString.fromJson(json['name']),
         description = I18nString.fromJson(json['description']);
 
-  factory Item.fromJson(Map<String, dynamic> json) {
+  factory Item._fromJson(Map<String, dynamic> json) {
     final type = ItemType._fromJson(json['type']);
     switch (type) {
       case ItemType.cookedFood:
@@ -84,8 +78,8 @@ class CookedFood extends Item {
   final ItemList recipe;
 
   CookedFood._fromJson(Map<String, dynamic> json)
-      : recipe = ItemList.fromJson(json['recipe']),
-        super._fromJson(json);
+      : recipe = ItemList._fromJson(json['recipe']),
+        super._fromJsonInternal(json);
 
   @override
   ItemType get type => ItemType.cookedFood;
@@ -101,7 +95,7 @@ class Forageable extends Item with WithLocation {
 
   Forageable._fromJson(Map<String, dynamic> json)
       : locationID = json['location'],
-        super._fromJson(json);
+        super._fromJsonInternal(json);
 
   @override
   ItemType get type => ItemType.forageable;
@@ -115,8 +109,8 @@ class Ingredient extends Item {
   final ItemList recipe;
 
   Ingredient._fromJson(Map<String, dynamic> json)
-      : recipe = ItemList.fromJson(json['recipe']),
-        super._fromJson(json);
+      : recipe = ItemList._fromJson(json['recipe']),
+        super._fromJsonInternal(json);
 
   @override
   ItemType get type => ItemType.ingredient;
@@ -132,7 +126,7 @@ class RawCrop extends Item with WithLocation {
 
   RawCrop._fromJson(Map<String, dynamic> json)
       : locationID = json['location'],
-        super._fromJson(json);
+        super._fromJsonInternal(json);
 
   @override
   ItemType get type => ItemType.rawCrop;

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
@@ -9,51 +8,10 @@ import 'package:http/retry.dart';
 import 'package:meta/meta.dart';
 import 'package:mutex/mutex.dart';
 
-import '../models/all_items.dart';
-import '../models/all_locations.dart';
-import '../models/all_moves.dart';
-import '../models/all_ooblets.dart';
-import '../models/api_image.dart';
-import '../models/item.dart';
-import '../models/location.dart';
-import '../models/move.dart';
-import '../models/ooblet.dart';
+import '../models/api_data.dart';
 import 'extensions.dart';
 
 part 'api_impl.dart';
-
-enum ApiDataType<T extends ApiData> {
-  allItems<AllItems>(),
-  item<Item>(),
-  itemImage<ApiImage>(),
-
-  allLocations<AllLocations>(),
-  location<Location>(),
-
-  allOoblets<AllOoblets>(),
-  ooblet<Ooblet>(),
-  oobletCommonImage<ApiImage>(),
-  oobletGleamyImage<ApiImage>(),
-  oobletUnusualImage<ApiImage>(),
-
-  allMoves<AllMoves>(),
-  move<Move>(),
-  moveImage<ApiImage>(),
-  ;
-
-  Future<T> fetch(String id) => ApiManager.instance.fetch(this, id);
-  Stream<T> fetchMany(Iterable<String> ids) =>
-      ApiManager.instance.fetchMany(this, ids);
-}
-
-@immutable
-abstract class ApiData {
-  ApiDataType<ApiData> get apiDataType;
-
-  String get id;
-
-  toJson();
-}
 
 abstract class ApiManager {
   static ApiManager get instance => GetIt.I<ApiManager>();
@@ -102,11 +60,6 @@ abstract class ApiRemoteService {
   FutureOr<T> fetch<T extends ApiData>(ApiDataType<T> type, String id);
 }
 
-abstract class ApiJsonConverter {
-  toJson<T extends ApiData>(ApiDataType<T> type, String id, Uint8List bytes);
-  T fromJson<T extends ApiData>(ApiDataType<T> type, String id, dynamic json);
-}
-
 enum ApiFetcherStatus { notLoaded, loadedFromCache, loadedFromRemote }
 
 abstract class ApiFetcher<T extends ApiData> {
@@ -153,7 +106,7 @@ class ApiDataTypeAdapter implements TypeAdapter<ApiData> {
     final type = ApiDataType.values.firstWhere((type) => type.name == typeName);
     final id = reader.readString();
     final json = jsonDecode(reader.readString());
-    return GetIt.I<ApiJsonConverter>().fromJson(type, id, json);
+    return ApiData.fromJson(type, id, json);
   }
 
   @override

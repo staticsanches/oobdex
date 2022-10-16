@@ -1,14 +1,10 @@
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'ooblet.dart';
+part of 'api_data.dart';
 
 @sealed
 class AllOoblets implements ApiData {
   final List<String> ids;
 
-  AllOoblets.fromJson(List<dynamic> json) : ids = List.unmodifiable(json);
+  AllOoblets._fromJson(List<dynamic> json) : ids = List.unmodifiable(json);
 
   @override
   ApiDataType<AllOoblets> get apiDataType => ApiDataType.allOoblets;

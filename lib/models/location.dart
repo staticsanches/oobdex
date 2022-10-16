@@ -1,9 +1,4 @@
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'i18n_string.dart';
-import 'item.dart';
-import 'ooblet.dart';
+part of 'api_data.dart';
 
 @sealed
 class Location implements ApiData {
@@ -17,7 +12,7 @@ class Location implements ApiData {
 
   final List<String> itemsIDs;
 
-  Location.fromJson(Map<String, dynamic> json)
+  Location._fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = I18nString.fromJson(json['name']),
         description = I18nString.fromJson(json['description']),

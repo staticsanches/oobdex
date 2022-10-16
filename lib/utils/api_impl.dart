@@ -4,7 +4,6 @@ void registerApiGetItTypes() {
   GetIt.I.registerSingleton<ApiManager>(_ApiManager());
   GetIt.I.registerSingleton<ApiCacheService>(_ApiHiveService());
   GetIt.I.registerSingleton<ApiRemoteService>(_ApiHttpsService());
-  GetIt.I.registerSingleton<ApiJsonConverter>(_ApiJsonConverter());
 }
 
 class _ApiManager extends ApiManager {
@@ -157,8 +156,6 @@ class _ApiHttpsService implements ApiRemoteService {
 
   @override
   Future<T> fetch<T extends ApiData>(ApiDataType<T> type, String id) async {
-    final jsonConverter = GetIt.I<ApiJsonConverter>();
-    final dynamic json;
     final client = RetryClient(http.Client());
     try {
       final uri = _uri(_path(type, id));
@@ -166,11 +163,10 @@ class _ApiHttpsService implements ApiRemoteService {
       if (!response.ok) {
         throw Exception('$uri: status ${response.statusCode}');
       }
-      json = jsonConverter.toJson(type, id, response.bodyBytes);
+      return ApiData.fromResponseBodyBytes(type, id, response.bodyBytes);
     } finally {
       client.close();
     }
-    return jsonConverter.fromJson(type, id, json);
   }
 
   Uri _uri(String path) => Uri.https(_authority, _pathPrefix + path);
@@ -205,61 +201,4 @@ class _ApiHttpsService implements ApiRemoteService {
         return '/moves/$id/image.png';
     }
   }
-}
-
-class _ApiJsonConverter implements ApiJsonConverter {
-  @override
-  toJson<T extends ApiData>(ApiDataType<T> type, String id, Uint8List bytes) {
-    if (_isImageType(type)) {
-      return UnmodifiableUint8ListView(bytes);
-    }
-    return jsonDecode(utf8.decode(bytes));
-  }
-
-  @override
-  T fromJson<T extends ApiData>(ApiDataType<T> type, String id, dynamic json) {
-    if (_isImageType(type)) {
-      final UnmodifiableUint8ListView content;
-      if (json is UnmodifiableUint8ListView) {
-        content = json;
-      } else {
-        content = UnmodifiableUint8ListView(
-          Uint8List.fromList(json.cast<int>()),
-        );
-      }
-      return ApiImage(type as ApiDataType<ApiImage>, id, content) as T;
-    }
-    if (type == ApiDataType.allItems) {
-      return AllItems.fromJson(json) as T;
-    }
-    if (type == ApiDataType.item) {
-      return Item.fromJson(json) as T;
-    }
-    if (type == ApiDataType.allLocations) {
-      return AllLocations.fromJson(json) as T;
-    }
-    if (type == ApiDataType.location) {
-      return Location.fromJson(json) as T;
-    }
-    if (type == ApiDataType.allOoblets) {
-      return AllOoblets.fromJson(json) as T;
-    }
-    if (type == ApiDataType.ooblet) {
-      return Ooblet.fromJson(json) as T;
-    }
-    if (type == ApiDataType.allMoves) {
-      return AllMoves.fromJson(json) as T;
-    }
-    if (type == ApiDataType.move) {
-      return Move.fromJson(json) as T;
-    }
-    throw UnimplementedError('$type is not supported');
-  }
-
-  static _isImageType(ApiDataType type) =>
-      type == ApiDataType.itemImage ||
-      type == ApiDataType.oobletCommonImage ||
-      type == ApiDataType.oobletGleamyImage ||
-      type == ApiDataType.oobletUnusualImage ||
-      type == ApiDataType.moveImage;
 }

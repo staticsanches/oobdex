@@ -1,8 +1,4 @@
-import 'dart:typed_data';
-
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
+part of 'api_data.dart';
 
 @sealed
 class ApiImage implements ApiData {
@@ -12,7 +8,7 @@ class ApiImage implements ApiData {
   final String id;
   final UnmodifiableUint8ListView content;
 
-  const ApiImage(this.apiDataType, this.id, this.content);
+  const ApiImage._(this.apiDataType, this.id, this.content);
 
   @override
   UnmodifiableUint8ListView toJson() => content;

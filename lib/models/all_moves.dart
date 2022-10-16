@@ -1,14 +1,10 @@
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'move.dart';
+part of 'api_data.dart';
 
 @sealed
 class AllMoves implements ApiData {
   final List<String> ids;
 
-  AllMoves.fromJson(List<dynamic> json) : ids = List.unmodifiable(json);
+  AllMoves._fromJson(List<dynamic> json) : ids = List.unmodifiable(json);
 
   @override
   ApiDataType<AllMoves> get apiDataType => ApiDataType.allMoves;

@@ -1,11 +1,4 @@
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'api_image.dart';
-import 'i18n_string.dart';
-import 'item_list.dart';
-import 'location.dart';
-import 'signature_move.dart';
+part of 'api_data.dart';
 
 @sealed
 class Ooblet with WithLocation implements ApiData {
@@ -22,13 +15,13 @@ class Ooblet with WithLocation implements ApiData {
 
   final SignatureMoveList signatureMoves;
 
-  Ooblet.fromJson(Map<String, dynamic> json)
+  Ooblet._fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = I18nString.fromJson(json['name']),
         quote = I18nString.fromJson(json['quote']),
         locationID = json['location'],
-        items = ItemList.fromJson(json['items']),
-        signatureMoves = SignatureMoveList.fromJson(json['signatureMoves']);
+        items = ItemList._fromJson(json['items']),
+        signatureMoves = SignatureMoveList._fromJson(json['signatureMoves']);
 
   @override
   ApiDataType<Ooblet> get apiDataType => ApiDataType.ooblet;

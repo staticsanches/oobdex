@@ -1,14 +1,10 @@
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
-import '../utils/api.dart';
-import 'location.dart';
+part of 'api_data.dart';
 
 @sealed
 class AllLocations implements ApiData {
   final List<String> ids;
 
-  AllLocations.fromJson(List<dynamic> json) : ids = List.unmodifiable(json);
+  AllLocations._fromJson(List<dynamic> json) : ids = List.unmodifiable(json);
 
   @override
   ApiDataType<AllLocations> get apiDataType => ApiDataType.allLocations;
