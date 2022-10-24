@@ -1,35 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'pages/all_ooblets_page.dart';
 import 'pages/home_page.dart';
+import 'redux/redux.dart';
 import 'utils/api.dart';
 
 void main() async {
   registerApiGetItTypes();
 
   Hive.registerAdapter(ApiDataTypeAdapter());
-  await Hive.initFlutter('ooblets_tracker');
+  await Hive.initFlutter('oobdex');
 
-  runApp(const OobletsTrackerApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  final store = createStore()..initialDispatch();
+  runApp(OobdexApp(store));
 }
 
-class OobletsTrackerApp extends StatelessWidget {
-  const OobletsTrackerApp({super.key});
+class OobdexApp extends StatelessWidget {
+  final Store<OobdexState> _store;
+
+  const OobdexApp(this._store, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Ooblets Tracker',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
+    return StoreProvider<OobdexState>(
+      store: _store,
+      child: MaterialApp(
+        onGenerateTitle: (context) => AppLocalizations.of(context)!.oobdex,
+        theme: ThemeData(
+          useMaterial3: true,
+          primarySwatch: Colors.deepPurple,
+        ),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        initialRoute: HomePage.routeName,
+        routes: {
+          HomePage.routeName: (_) => const HomePage(),
+          AllOobletsPage.routeName: (_) => const AllOobletsPage(),
+        },
       ),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      initialRoute: HomePage.routeName,
-      routes: {
-        HomePage.routeName: (_) => const HomePage(),
-      },
     );
   }
 }

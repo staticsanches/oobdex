@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 import 'package:mutex/mutex.dart';
 
@@ -53,7 +54,7 @@ abstract class ApiManager {
 abstract class ApiCacheService {
   FutureOr<T?> fetch<T extends ApiData>(ApiDataType<T> type, String id);
   FutureOr<void> store<T extends ApiData>(T data);
-  FutureOr<void> clearAll(ApiDataType type);
+  FutureOr<void> clearAll<T extends ApiData>(ApiDataType<T> type);
 }
 
 abstract class ApiRemoteService {

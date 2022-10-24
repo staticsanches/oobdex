@@ -6,6 +6,8 @@ void registerApiGetItTypes() {
   GetIt.I.registerSingleton<ApiRemoteService>(_ApiHttpsService());
 }
 
+final _logger = Logger();
+
 class _ApiManager extends ApiManager {
   final Map<ApiDataType, Map<String, ApiFetcher>> _cache = {};
 
@@ -55,6 +57,7 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
     try {
       return await _fetch();
     } catch (e, stack) {
+      _logger.e('Error while fetching ${type.name} with id $id', e, stack);
       throw ApiFetcherException(
           type: type, id: id, cause: e, causeStack: stack);
     }
@@ -86,10 +89,18 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
       return data; // data already loaded
     }
 
+    final stopwatch = Stopwatch()..start();
     data = await GetIt.I<ApiCacheService>().fetch(type, id);
     if (data != null) {
       _loadedData = data;
       _status = ApiFetcherStatus.loadedFromCache;
+      _logger.d(
+        'Cache hit for ${type.name} with id $id took ${stopwatch.elapsed}',
+      );
+    } else {
+      _logger.d(
+        'Cache miss for ${type.name} with id $id took ${stopwatch.elapsed}',
+      );
     }
     return data;
   }
@@ -106,7 +117,11 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
     _status = ApiFetcherStatus.loadedFromRemote;
 
     // Store the retrieved data in persistent cache
+    final stopwatch = Stopwatch()..start();
     await GetIt.I<ApiCacheService>().store(data);
+    _logger.d(
+      'Cache store for ${type.name} with id $id took ${stopwatch.elapsed}',
+    );
 
     return data;
   }
@@ -128,6 +143,7 @@ class _ApiHiveService implements ApiCacheService {
     try {
       final box = await Hive.openLazyBox<T>(_boxName(type));
       await box.put(data.id, data);
+      await box.close();
     } finally {
       mutex.release();
     }
@@ -139,15 +155,26 @@ class _ApiHiveService implements ApiCacheService {
     await mutex.acquireRead();
     try {
       final box = await Hive.openLazyBox<T>(_boxName(type));
-      return await box.get(id);
+      final data = await box.get(id);
+      await box.close();
+      return data;
     } finally {
       mutex.release();
     }
   }
 
   @override
-  Future<void> clearAll(ApiDataType<ApiData> type) =>
-      _mutex(type).protectWrite(() => Hive.deleteBoxFromDisk(_boxName(type)));
+  Future<void> clearAll<T extends ApiData>(ApiDataType<T> type) async {
+    final mutex = _mutex(type);
+    await mutex.acquireWrite();
+    try {
+      final box = await Hive.openLazyBox<T>(_boxName(type));
+      await box.clear();
+      await box.close();
+    } finally {
+      mutex.release();
+    }
+  }
 }
 
 class _ApiHttpsService implements ApiRemoteService {
@@ -157,8 +184,9 @@ class _ApiHttpsService implements ApiRemoteService {
   @override
   Future<T> fetch<T extends ApiData>(ApiDataType<T> type, String id) async {
     final client = RetryClient(http.Client());
+    final uri = _uri(_path(type, id));
+    final stopwatch = Stopwatch()..start();
     try {
-      final uri = _uri(_path(type, id));
       final response = await client.get(uri);
       if (!response.ok) {
         throw Exception('$uri: status ${response.statusCode}');
@@ -166,6 +194,7 @@ class _ApiHttpsService implements ApiRemoteService {
       return ApiData.fromResponseBodyBytes(type, id, response.bodyBytes);
     } finally {
       client.close();
+      _logger.d('Call to $uri took ${stopwatch.elapsed}');
     }
   }
 

@@ -12,7 +12,7 @@ class AllOoblets implements ApiData {
   @override
   String get id => apiDataType.name;
 
-  Stream<Ooblet> fetchOoblest() => ApiDataType.ooblet.fetchMany(ids);
+  Stream<Ooblet> fetchOoblets() => ApiDataType.ooblet.fetchMany(ids);
 
   @override
   List<String> toJson() => ids;

@@ -1,6 +1,7 @@
 {
-    "helloWorld": "Hello World!",
-    "@helloWorld": {
-      "description": "The conventional newborn programmer greeting"
-    }
+  "oobdex": "Oobdex",
+  "ooblets": "Ooblets",
+  "clearCache": "Clear cache",
+  "clearCacheSuccess": "Cache successfully cleared",
+  "clearCacheFail": "Cache was not cleared"
 }

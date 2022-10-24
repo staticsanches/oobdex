@@ -379,7 +379,7 @@ void main() {
     expect(fetcher.status, ApiFetcherStatus.loadedFromCache);
 
     expect(
-      allOoblets.fetchOoblest(),
+      allOoblets.fetchOoblets(),
       emitsInOrder(
         allOoblets.ids
             .map((id) => predicate((Ooblet ooblet) => ooblet.id == id)),

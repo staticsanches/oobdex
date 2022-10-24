@@ -57,3 +57,27 @@ class Ooblet with WithLocation implements ApiData {
   @override
   String toString() => name.toString();
 }
+
+enum OobletVariant { common, unusual, gleamy }
+
+@sealed
+@immutable
+class OobletWithVariant {
+  final OobletVariant variant;
+  final String id;
+
+  const OobletWithVariant(this.variant, this.id);
+}
+
+extension OobletVariantImageType on OobletVariant {
+  ApiDataType<ApiImage> get imageType {
+    switch (this) {
+      case OobletVariant.common:
+        return ApiDataType.oobletCommonImage;
+      case OobletVariant.unusual:
+        return ApiDataType.oobletUnusualImage;
+      case OobletVariant.gleamy:
+        return ApiDataType.oobletGleamyImage;
+    }
+  }
+}
