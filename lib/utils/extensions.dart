@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/locale.dart';
 
@@ -18,4 +19,17 @@ extension ApiDataTypeFetch<T extends ApiData> on ApiDataType<T> {
   Future<T> fetch(String id) => ApiManager.instance.fetch(this, id);
   Stream<T> fetchMany(Iterable<String> ids) =>
       ApiManager.instance.fetchMany(this, ids);
+}
+
+extension OobletVariantExtension on OobletVariant {
+  String getName(AppLocalizations appLocalizations) {
+    switch (this) {
+      case OobletVariant.common:
+        return appLocalizations.oobletVariantCommon;
+      case OobletVariant.unusual:
+        return appLocalizations.oobletVariantUnusual;
+      case OobletVariant.gleamy:
+        return appLocalizations.oobletVariantGleamy;
+    }
+  }
 }

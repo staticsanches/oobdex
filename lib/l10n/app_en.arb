@@ -3,5 +3,14 @@
   "ooblets": "Ooblets",
   "clearCache": "Clear cache",
   "clearCacheSuccess": "Cache successfully cleared",
-  "clearCacheFail": "Cache was not cleared"
+  "clearCacheFail": "Cache was not cleared",
+  "oobletVariants": "Variants",
+  "oobletVariantCommon": "Common",
+  "oobletVariantUnusual": "Unusual",
+  "oobletVariantGleamy": "Gleamy",
+  "anErrorOccurred": "An error occurred",
+  "retry": "Retry",
+  "searchByName": "Search by name",
+  "clearAll": "Clear all",
+  "locations": "Locations"
 }

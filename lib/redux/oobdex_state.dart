@@ -4,25 +4,29 @@ part of 'redux.dart';
 @immutable
 class OobdexState {
   final OobletsSlice oobletsSlice;
+  final LocationsSlice locationsSlice;
 
   const OobdexState._({
     this.oobletsSlice = const OobletsSlice._(),
+    this.locationsSlice = const LocationsSlice._(),
   });
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is OobdexState && oobletsSlice == other.oobletsSlice);
+      (other is OobdexState &&
+          oobletsSlice == other.oobletsSlice &&
+          locationsSlice == other.locationsSlice);
 
   @override
-  int get hashCode => oobletsSlice.hashCode;
+  int get hashCode => Object.hash(oobletsSlice, locationsSlice);
 }
 
 // Actions - start
 
 Future<void> clearCacheAction(Store<OobdexState> store) async {
   await ApiManager.instance.clearAll();
-  store.dispatch(fetchOobletsAction);
+  store._initialDispatch();
 }
 
 // Actions - end
@@ -31,6 +35,7 @@ Future<void> clearCacheAction(Store<OobdexState> store) async {
 
 OobdexState _oobdexStateReducer(OobdexState state, action) => OobdexState._(
       oobletsSlice: _oobletsReducer(state.oobletsSlice, action),
+      locationsSlice: _locationsReducer(state.locationsSlice, action),
     );
 
 // Reducers - end

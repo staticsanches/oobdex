@@ -18,7 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  final store = createStore()..initialDispatch();
+  final store = createStore();
   runApp(OobdexApp(store));
 }
 
@@ -32,6 +32,7 @@ class OobdexApp extends StatelessWidget {
     return StoreProvider<OobdexState>(
       store: _store,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         onGenerateTitle: (context) => AppLocalizations.of(context)!.oobdex,
         theme: ThemeData(
           useMaterial3: true,

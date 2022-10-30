@@ -46,12 +46,10 @@ class Ooblet with WithLocation implements ApiData {
       };
 
   @override
-  @nonVirtual
   bool operator ==(Object other) =>
       identical(this, other) || (other is Ooblet && id == other.id);
 
   @override
-  @nonVirtual
   int get hashCode => id.hashCode;
 
   @override
@@ -63,10 +61,23 @@ enum OobletVariant { common, unusual, gleamy }
 @sealed
 @immutable
 class OobletWithVariant {
+  final Ooblet ooblet;
   final OobletVariant variant;
-  final String id;
 
-  const OobletWithVariant(this.variant, this.id);
+  const OobletWithVariant(this.ooblet, this.variant);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OobletWithVariant &&
+          ooblet == other.ooblet &&
+          variant == other.variant);
+
+  @override
+  int get hashCode => Object.hash(ooblet, variant);
+
+  @override
+  String toString() => '$ooblet (${variant.name})';
 }
 
 extension OobletVariantImageType on OobletVariant {
