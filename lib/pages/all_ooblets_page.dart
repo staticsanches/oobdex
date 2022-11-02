@@ -16,7 +16,11 @@ class AllOobletsPage extends HookWidget {
   Widget build(BuildContext context) {
     final appLocalizations = useAppLocalizations();
     final dispatch = useDispatch();
-    final oobletsSlice = useSelector((state) => state.oobletsSlice);
+
+    final hasErrorLoadingOoblets =
+        useSelector((state) => state.oobletsSlice.hasErrorLoadingOoblets);
+    final loadingOoblets =
+        useSelector((state) => state.oobletsSlice.loadingOoblets);
 
     final filtersAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 400),
@@ -24,7 +28,7 @@ class AllOobletsPage extends HookWidget {
     );
 
     final Widget body;
-    if (oobletsSlice.hasErrorLoadingOoblets) {
+    if (hasErrorLoadingOoblets) {
       body = Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -34,7 +38,7 @@ class AllOobletsPage extends HookWidget {
               color: Colors.red,
             ),
             const SizedBox(height: 10),
-            SelectableText(appLocalizations.anErrorOccurred),
+            Text(appLocalizations.anErrorOccurred),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () => dispatch(fetchOobletsAction),
@@ -43,10 +47,8 @@ class AllOobletsPage extends HookWidget {
           ],
         ),
       );
-    } else if (oobletsSlice.loadingOoblets) {
-      body = const Center(
-        child: CircularProgressIndicator(),
-      );
+    } else if (loadingOoblets) {
+      body = const Center(child: CircularProgressIndicator());
     } else {
       body = Column(
         children: [
@@ -54,22 +56,7 @@ class AllOobletsPage extends HookWidget {
             sizeFactor: filtersAnimationController,
             child: const OobletsFilter(),
           ),
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-              ),
-              itemCount: oobletsSlice.ooblets.length,
-              itemBuilder: (ctx, index) {
-                final oobletWithVariant = oobletsSlice.ooblets[index];
-                return ApiImageWidget(
-                  key: ValueKey(oobletWithVariant),
-                  oobletWithVariant.variant.imageType,
-                  oobletWithVariant.ooblet.id,
-                );
-              },
-            ),
-          ),
+          const Expanded(child: _OobletsGridView()),
         ],
       );
     }
@@ -88,6 +75,33 @@ class AllOobletsPage extends HookWidget {
         ],
       ),
       body: body,
+    );
+  }
+}
+
+class _OobletsGridView extends HookWidget {
+  const _OobletsGridView();
+
+  @override
+  Widget build(BuildContext context) {
+    final ooblets = useSelector((state) => state.oobletsSlice.ooblets);
+    final crossAxisCount = useResponsiveValue(
+      const Breakpoints(xs: 3, sm: 4, md: 5, lg: 6, xl: 7),
+    );
+
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+      ),
+      itemCount: ooblets.length,
+      itemBuilder: (ctx, index) {
+        final oobletWithVariant = ooblets[index];
+        return ApiImageWidget(
+          key: ValueKey(oobletWithVariant),
+          oobletWithVariant.variant.imageType,
+          oobletWithVariant.ooblet.id,
+        );
+      },
     );
   }
 }
