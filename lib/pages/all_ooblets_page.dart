@@ -65,13 +65,14 @@ class AllOobletsPage extends HookWidget {
       appBar: AppBar(
         title: Text(appLocalizations.ooblets),
         actions: [
-          OobletsFilterButton(() {
-            if (filtersAnimationController.value > 0) {
-              filtersAnimationController.reverse();
-            } else {
-              filtersAnimationController.forward();
-            }
-          }),
+          if (!hasErrorLoadingOoblets && !loadingOoblets)
+            OobletsFilterButton(() {
+              if (filtersAnimationController.value > 0) {
+                filtersAnimationController.reverse();
+              } else {
+                filtersAnimationController.forward();
+              }
+            }),
         ],
       ),
       body: body,
@@ -84,24 +85,27 @@ class _OobletsGridView extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = useAppLocalizations();
     final ooblets = useSelector((state) => state.oobletsSlice.ooblets);
     final crossAxisCount = useResponsiveValue(
       const Breakpoints(xs: 3, sm: 4, md: 5, lg: 6, xl: 7),
     );
 
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-      ),
-      itemCount: ooblets.length,
-      itemBuilder: (ctx, index) {
-        final oobletWithVariant = ooblets[index];
-        return ApiImageWidget(
-          key: ValueKey(oobletWithVariant),
-          oobletWithVariant.variant.imageType,
-          oobletWithVariant.ooblet.id,
-        );
-      },
-    );
+    return ooblets.isEmpty
+        ? Center(child: Text(appLocalizations.noOobletsFound))
+        : GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+            ),
+            itemCount: ooblets.length,
+            itemBuilder: (ctx, index) {
+              final oobletWithVariant = ooblets[index];
+              return ApiImageWidget(
+                key: ValueKey(oobletWithVariant),
+                oobletWithVariant.variant.imageType,
+                oobletWithVariant.ooblet.id,
+              );
+            },
+          );
   }
 }

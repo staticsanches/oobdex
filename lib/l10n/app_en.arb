@@ -12,5 +12,6 @@
   "retry": "Retry",
   "searchByName": "Search by name",
   "clearAll": "Clear all",
-  "locations": "Locations"
+  "locations": "Locations",
+  "noOobletsFound": "No Ooblets found"
 }
