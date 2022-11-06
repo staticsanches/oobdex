@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../hooks/hooks.dart';
@@ -32,7 +34,8 @@ class OobletsFilter extends HookWidget {
           padding: EdgeInsets.only(
             left: 10,
             right: 10,
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 10,
+            bottom: max(10, MediaQuery.of(context).viewInsets.bottom),
           ),
           child: Column(
             children: [
@@ -47,16 +50,14 @@ class OobletsFilter extends HookWidget {
                   },
                 ),
               ),
-              SizedBox(
-                child: TextField(
-                  controller: nameFilterController,
-                  decoration: InputDecoration(
-                    hintText: appLocalizations.searchByName,
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: IconButton(
-                      onPressed: nameFilterController.clear,
-                      icon: const Icon(Icons.clear),
-                    ),
+              TextField(
+                controller: nameFilterController,
+                decoration: InputDecoration(
+                  hintText: appLocalizations.searchByName,
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    onPressed: nameFilterController.clear,
+                    icon: const Icon(Icons.clear),
                   ),
                 ),
               ),

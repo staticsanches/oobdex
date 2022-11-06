@@ -36,7 +36,7 @@ class OobdexApp extends StatelessWidget {
         onGenerateTitle: (context) => AppLocalizations.of(context)!.oobdex,
         theme: ThemeData(
           useMaterial3: true,
-          primarySwatch: Colors.deepPurple,
+          primarySwatch: Colors.lightGreen,
         ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

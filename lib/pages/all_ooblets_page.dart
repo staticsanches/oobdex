@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../hooks/hooks.dart';
 import '../models/api_data.dart';
 import '../redux/redux.dart';
+import '../utils/extensions.dart';
 import '../widgets/api_image_widget.dart';
 import '../widgets/caught_status_toggle.dart';
 import '../widgets/ooblets_filter.dart';
@@ -93,36 +94,70 @@ class _OobletsGridView extends HookWidget {
 
     return oobletsWithVariants.isEmpty
         ? Center(child: Text(appLocalizations.noOobletsFound))
-        : GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
+        : Padding(
+            padding: const EdgeInsets.all(10),
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: 3 / 4,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+              ),
+              itemCount: oobletsWithVariants.length,
+              itemBuilder: (_, index) =>
+                  _OobletItem(oobletsWithVariants[index]),
             ),
-            itemCount: oobletsWithVariants.length,
-            itemBuilder: (_, index) => _OobletItem(oobletsWithVariants[index]),
           );
   }
 }
 
-class _OobletItem extends StatelessWidget {
+class _OobletItem extends HookWidget {
   final OobletWithVariant oobletWithVariant;
 
   _OobletItem(this.oobletWithVariant) : super(key: ValueKey(oobletWithVariant));
 
   @override
-  Widget build(BuildContext context) => Stack(
-        children: [
-          ApiImageWidget(
-            oobletWithVariant.variant.imageType,
-            oobletWithVariant.ooblet.id,
+  Widget build(BuildContext context) {
+    final appLocalizations = useAppLocalizations();
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        InkWell(
+          onTap: () {},
+          customBorder: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
-          Align(
-            alignment: Alignment.topRight,
+          child: Column(
+            children: [
+              Expanded(
+                child: ApiImageWidget(
+                  oobletWithVariant.variant.imageType,
+                  oobletWithVariant.ooblet.id,
+                ),
+              ),
+              Text(
+                oobletWithVariant.ooblet.name.toString(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '(${oobletWithVariant.variant.getName(appLocalizations).toLowerCase()})',
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.all(5),
             child: CaughtStatusToggle(
               size: 30,
               variant: oobletWithVariant.variant,
               ooblet: oobletWithVariant.ooblet.id,
             ),
           ),
-        ],
-      );
+        ),
+      ],
+    );
+  }
 }
