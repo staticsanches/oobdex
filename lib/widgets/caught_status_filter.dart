@@ -5,42 +5,39 @@ import '../models/api_data.dart';
 import '../redux/redux.dart';
 import '../utils/extensions.dart';
 
-class VariantsFilterWidget extends StatelessWidget {
-  const VariantsFilterWidget({super.key});
+class CaughtStatusFilter extends StatelessWidget {
+  const CaughtStatusFilter({super.key});
 
   @override
   Widget build(BuildContext context) => Wrap(
         spacing: 10,
-        runSpacing: 10,
         alignment: WrapAlignment.center,
         children: const [
-          _VariantChip(OobletVariant.common),
-          _VariantChip(OobletVariant.unusual),
-          _VariantChip(OobletVariant.gleamy),
+          _Chip(OobletCaughtStatus.any),
+          _Chip(OobletCaughtStatus.caught),
+          _Chip(OobletCaughtStatus.missing),
         ],
       );
 }
 
-class _VariantChip extends HookWidget {
-  final OobletVariant variant;
+class _Chip extends HookWidget {
+  final OobletCaughtStatus status;
 
-  const _VariantChip(this.variant);
+  const _Chip(this.status);
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = useAppLocalizations();
     final dispatch = useDispatch();
     final selected = useSelector(
-      (state) => state.oobletsSlice.variantsFilter.contains(variant),
+      (state) => state.oobletsSlice.caughtStatusFilter == status,
     );
     return FilterChip(
-      label: Text(variant.getName(appLocalizations)),
+      label: Text(status.getName(appLocalizations)),
       selected: selected,
       onSelected: (value) {
         if (value) {
-          dispatch(addVariantOobletsFilterAction(variant));
-        } else {
-          dispatch(removeVariantOobletsFilterAction(variant));
+          dispatch(updateCaughtStatusOobletsFilterAction(status));
         }
       },
     );

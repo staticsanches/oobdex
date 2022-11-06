@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -8,15 +7,16 @@ import 'pages/all_ooblets_page.dart';
 import 'pages/home_page.dart';
 import 'redux/redux.dart';
 import 'utils/api.dart';
+import 'utils/ooblets_caught_status_service.dart';
 
 void main() async {
   registerApiGetItTypes();
+  registerOobletsCaughtStatusGetItTypes();
 
   Hive.registerAdapter(ApiDataTypeAdapter());
   await Hive.initFlutter('oobdex');
 
-  WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await OobletsCaughtStatusService.instance.init();
 
   final store = createStore();
   runApp(OobdexApp(store));

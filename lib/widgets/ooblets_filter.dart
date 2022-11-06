@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../hooks/hooks.dart';
 import '../redux/redux.dart';
-import 'locations_filter_widget.dart';
-import 'variants_filter_widget.dart';
+import 'caught_status_filter.dart';
+import 'locations_filter.dart';
+import 'variants_filter.dart';
 
 class OobletsFilter extends HookWidget {
   const OobletsFilter({super.key});
@@ -18,61 +19,87 @@ class OobletsFilter extends HookWidget {
       updateAction: updateNameOobletsFilterAction,
     );
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              child: Text(appLocalizations.clearAll),
-              onPressed: () async {
-                nameFilterController.clear();
-                await dispatch(clearVariantsLocationsOobletsFilterAction);
-              },
-            ),
+    const startDivider = Expanded(
+      child: Divider(endIndent: 20, color: Colors.black),
+    );
+    const endDivider = Expanded(
+      child: Divider(indent: 20, color: Colors.black),
+    );
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 10,
+            right: 10,
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          SizedBox(
-            width: 300,
-            child: TextField(
-              controller: nameFilterController,
-              decoration: InputDecoration(
-                hintText: appLocalizations.searchByName,
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  onPressed: nameFilterController.clear,
-                  icon: const Icon(Icons.clear),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  child: Text(appLocalizations.clearAll),
+                  onPressed: () async {
+                    nameFilterController.clear();
+                    await dispatch(
+                        clearVariantsLocationsCaughtStatusOobletsFilterAction);
+                  },
                 ),
               ),
-            ),
+              SizedBox(
+                child: TextField(
+                  controller: nameFilterController,
+                  decoration: InputDecoration(
+                    hintText: appLocalizations.searchByName,
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      onPressed: nameFilterController.clear,
+                      icon: const Icon(Icons.clear),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 10),
+                child: Row(
+                  children: [
+                    startDivider,
+                    Text(appLocalizations.oobletCaughtStatus),
+                    endDivider,
+                  ],
+                ),
+              ),
+              const CaughtStatusFilter(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  children: [
+                    startDivider,
+                    Text(appLocalizations.oobletVariants),
+                    endDivider,
+                  ],
+                ),
+              ),
+              const VariantsFilter(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  children: [
+                    startDivider,
+                    Text(appLocalizations.locations),
+                    endDivider,
+                  ],
+                ),
+              ),
+              const LocationsFilter(
+                selectedSelectorProvider: _locationsSelectedSelector,
+                addFilterActionProvider: addLocationOobletsFilterAction,
+                removeFilterActionProvider: removeLocationOobletsFilterAction,
+              )
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children: [
-                const Expanded(child: Divider(endIndent: 20)),
-                Text(appLocalizations.oobletVariants),
-                const Expanded(child: Divider(indent: 20)),
-              ],
-            ),
-          ),
-          const VariantsFilterWidget(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children: [
-                const Expanded(child: Divider(endIndent: 20)),
-                Text(appLocalizations.locations),
-                const Expanded(child: Divider(indent: 20)),
-              ],
-            ),
-          ),
-          const LocationsFilterWidget(
-            selectedSelectorProvider: _locationsSelectedSelector,
-            addFilterActionProvider: addLocationOobletsFilterAction,
-            removeFilterActionProvider: removeLocationOobletsFilterAction,
-          )
-        ],
+        ),
       ),
     );
   }

@@ -33,3 +33,20 @@ extension OobletVariantExtension on OobletVariant {
     }
   }
 }
+
+extension OobletCaughtStatusExtension on OobletCaughtStatus {
+  String getName(AppLocalizations appLocalizations) {
+    switch (this) {
+      case OobletCaughtStatus.any:
+        return appLocalizations.oobletCaughtStatusAny;
+      case OobletCaughtStatus.caught:
+        return appLocalizations.oobletCaughtStatusCaught;
+      case OobletCaughtStatus.missing:
+        return appLocalizations.oobletCaughtStatusMissing;
+    }
+  }
+}
+
+extension MapExtension<K, V> on Map<K, V> {
+  V? get(K key) => this[key];
+}

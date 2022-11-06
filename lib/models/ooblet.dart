@@ -58,6 +58,8 @@ class Ooblet with WithLocation implements ApiData {
 
 enum OobletVariant { common, unusual, gleamy }
 
+enum OobletCaughtStatus { any, caught, missing }
+
 @sealed
 @immutable
 class OobletWithVariant {

@@ -13,5 +13,9 @@
   "searchByName": "Search by name",
   "clearAll": "Clear all",
   "locations": "Locations",
-  "noOobletsFound": "No Ooblets found"
+  "noOobletsFound": "No Ooblets found",
+  "oobletCaughtStatus": "Caught Status",
+  "oobletCaughtStatusAny": "Any",
+  "oobletCaughtStatusCaught": "Caught",
+  "oobletCaughtStatusMissing": "Missing"
 }

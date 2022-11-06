@@ -3,39 +3,53 @@ part of 'redux.dart';
 @sealed
 @immutable
 class OobletsSlice {
-  final List<OobletWithVariant> ooblets;
+  final List<Ooblet> ooblets;
+  final List<OobletWithVariant> oobletsWithVariants;
+
   final bool loadingOoblets;
   final bool hasErrorLoadingOoblets;
 
   final Set<OobletVariant> variantsFilter;
   final Set<String> locationsFilter;
   final String nameFilter;
+  final OobletCaughtStatus caughtStatusFilter;
+
+  final Map<OobletVariant, Map<String, bool>> variantCaughtStatus;
 
   const OobletsSlice._({
     this.ooblets = const [],
+    this.oobletsWithVariants = const [],
     this.loadingOoblets = true,
     this.hasErrorLoadingOoblets = false,
     this.variantsFilter = const {},
     this.locationsFilter = const {},
     this.nameFilter = '',
+    this.caughtStatusFilter = OobletCaughtStatus.any,
+    this.variantCaughtStatus = const {},
   });
 
   OobletsSlice _copyWith({
-    List<OobletWithVariant>? ooblets,
+    List<Ooblet>? ooblets,
+    List<OobletWithVariant>? oobletsWithVariants,
     bool? loadingOoblets,
     bool? hasErrorLoadingOoblets,
     Set<OobletVariant>? variantsFilter,
     Set<String>? locationsFilter,
     String? nameFilter,
+    OobletCaughtStatus? caughtStatusFilter,
+    Map<OobletVariant, Map<String, bool>>? variantCaughtStatus,
   }) =>
       OobletsSlice._(
         ooblets: ooblets ?? this.ooblets,
+        oobletsWithVariants: oobletsWithVariants ?? this.oobletsWithVariants,
         loadingOoblets: loadingOoblets ?? this.loadingOoblets,
         hasErrorLoadingOoblets:
             hasErrorLoadingOoblets ?? this.hasErrorLoadingOoblets,
         variantsFilter: variantsFilter ?? this.variantsFilter,
         locationsFilter: locationsFilter ?? this.locationsFilter,
         nameFilter: nameFilter ?? this.nameFilter,
+        caughtStatusFilter: caughtStatusFilter ?? this.caughtStatusFilter,
+        variantCaughtStatus: variantCaughtStatus ?? this.variantCaughtStatus,
       );
 
   @override
@@ -43,20 +57,26 @@ class OobletsSlice {
       identical(this, other) ||
       (other is OobletsSlice &&
           listEquals(ooblets, other.ooblets) &&
+          listEquals(oobletsWithVariants, other.oobletsWithVariants) &&
           loadingOoblets == other.loadingOoblets &&
           hasErrorLoadingOoblets == other.hasErrorLoadingOoblets &&
           setEquals(variantsFilter, other.variantsFilter) &&
           setEquals(locationsFilter, other.locationsFilter) &&
-          nameFilter == other.nameFilter);
+          nameFilter == other.nameFilter &&
+          caughtStatusFilter == other.caughtStatusFilter &&
+          mapEquals(variantCaughtStatus, other.variantCaughtStatus));
 
   @override
   int get hashCode => Object.hash(
         Object.hashAll(ooblets),
+        Object.hashAll(oobletsWithVariants),
         loadingOoblets,
         hasErrorLoadingOoblets,
         Object.hashAll(variantsFilter),
         Object.hashAll(locationsFilter),
         nameFilter,
+        caughtStatusFilter,
+        variantCaughtStatus,
       );
 }
 
@@ -65,6 +85,7 @@ class OobletsSlice {
 Future<void> fetchOobletsAction(Store<OobdexState> store) async {
   store.dispatch(const _UpdateOobletsSliceAction(
     ooblets: [],
+    oobletsWithVariants: [],
     loadingOoblets: true,
     hasErrorLoadingOoblets: false,
   ));
@@ -72,9 +93,19 @@ Future<void> fetchOobletsAction(Store<OobdexState> store) async {
     final variantsFilter = store.state.oobletsSlice.variantsFilter;
     final locationsFilter = store.state.oobletsSlice.locationsFilter;
     final nameFilter = store.state.oobletsSlice.nameFilter.trim().toUpperCase();
+    final caughtStatusFilter = store.state.oobletsSlice.caughtStatusFilter;
+    final variantCaughtStatus = store.state.oobletsSlice.variantCaughtStatus;
 
-    final ooblets = <OobletWithVariant>[];
     final allOoblets = await ApiManager.instance.fetchAllOoblets();
+
+    final ooblets = SplayTreeSet<Ooblet>(_compareOoblets);
+    final oobletsWithVariants = SplayTreeSet<OobletWithVariant>((o1, o2) {
+      var result = _compareOoblets(o1.ooblet, o2.ooblet);
+      if (result == 0) {
+        result = o1.variant.index - o2.variant.index;
+      }
+      return result;
+    });
     await for (final ooblet in allOoblets.fetchOoblets()) {
       if (locationsFilter.isNotEmpty &&
           !locationsFilter.contains(ooblet.locationID)) {
@@ -88,12 +119,21 @@ Future<void> fetchOobletsAction(Store<OobdexState> store) async {
         if (variantsFilter.isNotEmpty && !variantsFilter.contains(variant)) {
           continue; // invalid variant
         }
-        ooblets.add(OobletWithVariant(ooblet, variant));
+        if (caughtStatusFilter != OobletCaughtStatus.any) {
+          final caught = variantCaughtStatus[variant]?.get(ooblet.id) ?? false;
+          if (caught && caughtStatusFilter == OobletCaughtStatus.missing ||
+              !caught && caughtStatusFilter == OobletCaughtStatus.caught) {
+            continue;
+          }
+        }
+        ooblets.add(ooblet);
+        oobletsWithVariants.add(OobletWithVariant(ooblet, variant));
       }
     }
 
     store.dispatch(_UpdateOobletsSliceAction(
       ooblets: List.unmodifiable(ooblets).cast(),
+      oobletsWithVariants: List.unmodifiable(oobletsWithVariants).cast(),
       loadingOoblets: false,
       hasErrorLoadingOoblets: false,
     ));
@@ -103,6 +143,17 @@ Future<void> fetchOobletsAction(Store<OobdexState> store) async {
       hasErrorLoadingOoblets: true,
     ));
   }
+}
+
+int _compareOoblets(Ooblet o1, Ooblet o2) {
+  if (o1 == o2) {
+    return 0;
+  }
+  var result = o1.name.toString().compareTo(o2.name.toString());
+  if (result == 0) {
+    result = o1.id.compareTo(o2.id);
+  }
+  return result;
 }
 
 ThunkAction<void> addVariantOobletsFilterAction(OobletVariant variant) =>
@@ -151,32 +202,85 @@ ThunkAction<void> updateNameOobletsFilterAction(String nameFilter) =>
       await store.dispatch(fetchOobletsAction);
     };
 
-Future<void> clearVariantsLocationsOobletsFilterAction(
+ThunkAction<void> updateCaughtStatusOobletsFilterAction(
+  OobletCaughtStatus caughtStatusFilter,
+) =>
+    (store) async {
+      store.dispatch(
+        _UpdateOobletsSliceAction(caughtStatusFilter: caughtStatusFilter),
+      );
+      await store.dispatch(fetchOobletsAction);
+    };
+
+Future<void> clearVariantsLocationsCaughtStatusOobletsFilterAction(
   Store<OobdexState> store,
 ) async {
   store.dispatch(const _UpdateOobletsSliceAction(
     variantsFilter: {},
     locationsFilter: {},
+    caughtStatusFilter: OobletCaughtStatus.any,
   ));
   await store.dispatch(fetchOobletsAction);
 }
 
+ThunkAction<void> updateOobletCaughtStatus(
+  OobletVariant variant,
+  String ooblet,
+  bool caught,
+  bool fetchOoblets,
+) =>
+    (store) async {
+      await OobletsCaughtStatusService.instance
+          .updateCaughtStatus(variant, ooblet, caught);
+
+      final originalMap = store.state.oobletsSlice.variantCaughtStatus;
+      final newMap = {
+        ...originalMap,
+        variant: Map.unmodifiable({
+          ...originalMap[variant]!,
+          ooblet: caught,
+        }).cast<String, bool>()
+      };
+
+      store.dispatch(_UpdateOobletsSliceAction(
+        variantCaughtStatus: Map.unmodifiable(newMap).cast(),
+      ));
+
+      if (fetchOoblets &&
+          store.state.oobletsSlice.caughtStatusFilter !=
+              OobletCaughtStatus.any) {
+        await store.dispatch(fetchOobletsAction);
+      }
+    };
+
+class LoadOobletsCaughtStatusAction {
+  const LoadOobletsCaughtStatusAction();
+}
+
 class _UpdateOobletsSliceAction {
-  final List<OobletWithVariant>? ooblets;
+  final List<Ooblet>? ooblets;
+  final List<OobletWithVariant>? oobletsWithVariants;
+
   final bool? loadingOoblets;
   final bool? hasErrorLoadingOoblets;
 
   final Set<OobletVariant>? variantsFilter;
   final Set<String>? locationsFilter;
   final String? nameFilter;
+  final OobletCaughtStatus? caughtStatusFilter;
+
+  final Map<OobletVariant, Map<String, bool>>? variantCaughtStatus;
 
   const _UpdateOobletsSliceAction({
     this.ooblets,
+    this.oobletsWithVariants,
     this.loadingOoblets,
     this.hasErrorLoadingOoblets,
     this.variantsFilter,
     this.locationsFilter,
     this.nameFilter,
+    this.caughtStatusFilter,
+    this.variantCaughtStatus,
   });
 }
 
@@ -188,11 +292,25 @@ OobletsSlice _oobletsReducer(OobletsSlice state, dynamic action) {
   if (action is _UpdateOobletsSliceAction) {
     return state._copyWith(
       ooblets: action.ooblets,
+      oobletsWithVariants: action.oobletsWithVariants,
       loadingOoblets: action.loadingOoblets,
       hasErrorLoadingOoblets: action.hasErrorLoadingOoblets,
       variantsFilter: action.variantsFilter,
       locationsFilter: action.locationsFilter,
       nameFilter: action.nameFilter,
+      caughtStatusFilter: action.caughtStatusFilter,
+      variantCaughtStatus: action.variantCaughtStatus,
+    );
+  }
+  if (action is LoadOobletsCaughtStatusAction) {
+    final variantCaughtStatus = {
+      for (final variant in OobletVariant.values)
+        variant: Map.unmodifiable(
+          OobletsCaughtStatusService.instance.loadCaughtStatus(variant),
+        ).cast<String, bool>()
+    };
+    return state._copyWith(
+      variantCaughtStatus: Map.unmodifiable(variantCaughtStatus).cast(),
     );
   }
   return state;

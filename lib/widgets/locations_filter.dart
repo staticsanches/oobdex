@@ -4,12 +4,12 @@ import '../hooks/hooks.dart';
 import '../models/api_data.dart';
 import '../redux/redux.dart';
 
-class LocationsFilterWidget extends HookWidget {
+class LocationsFilter extends HookWidget {
   final Selector<bool> Function(String) selectedSelectorProvider;
   final ThunkAction<void> Function(String) addFilterActionProvider;
   final ThunkAction<void> Function(String) removeFilterActionProvider;
 
-  const LocationsFilterWidget({
+  const LocationsFilter({
     super.key,
     required this.selectedSelectorProvider,
     required this.addFilterActionProvider,
@@ -53,7 +53,7 @@ class LocationsFilterWidget extends HookWidget {
         alignment: WrapAlignment.center,
         children: [
           for (final location in locationsSlice.locations)
-            _LocationChip(
+            _Chip(
               location: location,
               selectedSelector: selectedSelectorProvider(location.id),
               addFilterAction: addFilterActionProvider(location.id),
@@ -67,13 +67,13 @@ class LocationsFilterWidget extends HookWidget {
   }
 }
 
-class _LocationChip extends HookWidget {
+class _Chip extends HookWidget {
   final Location location;
   final Selector<bool> selectedSelector;
   final ThunkAction<void> addFilterAction;
   final ThunkAction<void> removeFilterAction;
 
-  const _LocationChip({
+  const _Chip({
     required this.location,
     required this.selectedSelector,
     required this.addFilterAction,

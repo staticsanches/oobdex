@@ -32,10 +32,8 @@ class ApiImageWidget extends HookWidget {
         ),
       );
     } else if (data != null) {
-      return FittedBox(
-        child: Image.memory(
-          Uint8List.fromList(data.content),
-        ),
+      return Image.memory(
+        Uint8List.fromList(data.content),
       );
     }
     return const Center(child: CircularProgressIndicator());

@@ -4,6 +4,7 @@ import '../hooks/hooks.dart';
 import '../models/api_data.dart';
 import '../redux/redux.dart';
 import '../widgets/api_image_widget.dart';
+import '../widgets/caught_status_toggle.dart';
 import '../widgets/ooblets_filter.dart';
 import '../widgets/ooblets_filter_button.dart';
 
@@ -22,10 +23,7 @@ class AllOobletsPage extends HookWidget {
     final loadingOoblets =
         useSelector((state) => state.oobletsSlice.loadingOoblets);
 
-    final filtersAnimationController = useAnimationController(
-      duration: const Duration(milliseconds: 400),
-      initialValue: 0,
-    );
+    final globalKey = useMemoized(() => GlobalKey<ScaffoldState>());
 
     final Widget body;
     if (hasErrorLoadingOoblets) {
@@ -50,33 +48,34 @@ class AllOobletsPage extends HookWidget {
     } else if (loadingOoblets) {
       body = const Center(child: CircularProgressIndicator());
     } else {
-      body = Column(
-        children: [
-          SizeTransition(
-            sizeFactor: filtersAnimationController,
-            child: const OobletsFilter(),
-          ),
-          const Expanded(child: _OobletsGridView()),
-        ],
-      );
+      body = const SafeArea(child: _OobletsGridView());
     }
 
     return Scaffold(
+      key: globalKey,
       appBar: AppBar(
-        title: Text(appLocalizations.ooblets),
+        title: const _Title(),
         actions: [
           if (!hasErrorLoadingOoblets && !loadingOoblets)
-            OobletsFilterButton(() {
-              if (filtersAnimationController.value > 0) {
-                filtersAnimationController.reverse();
-              } else {
-                filtersAnimationController.forward();
-              }
-            }),
+            OobletsFilterButton(() => globalKey.currentState?.openEndDrawer()),
         ],
       ),
       body: body,
+      endDrawer: const Drawer(child: OobletsFilter()),
     );
+  }
+}
+
+class _Title extends HookWidget {
+  const _Title();
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = useAppLocalizations();
+    final oobletsLenght = useSelector(
+      (state) => state.oobletsSlice.oobletsWithVariants.length,
+    );
+    return Text('${appLocalizations.ooblets} ($oobletsLenght)');
   }
 }
 
@@ -86,26 +85,44 @@ class _OobletsGridView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = useAppLocalizations();
-    final ooblets = useSelector((state) => state.oobletsSlice.ooblets);
+    final oobletsWithVariants =
+        useSelector((state) => state.oobletsSlice.oobletsWithVariants);
     final crossAxisCount = useResponsiveValue(
       const Breakpoints(xs: 3, sm: 4, md: 5, lg: 6, xl: 7),
     );
 
-    return ooblets.isEmpty
+    return oobletsWithVariants.isEmpty
         ? Center(child: Text(appLocalizations.noOobletsFound))
         : GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
             ),
-            itemCount: ooblets.length,
-            itemBuilder: (ctx, index) {
-              final oobletWithVariant = ooblets[index];
-              return ApiImageWidget(
-                key: ValueKey(oobletWithVariant),
-                oobletWithVariant.variant.imageType,
-                oobletWithVariant.ooblet.id,
-              );
-            },
+            itemCount: oobletsWithVariants.length,
+            itemBuilder: (_, index) => _OobletItem(oobletsWithVariants[index]),
           );
   }
+}
+
+class _OobletItem extends StatelessWidget {
+  final OobletWithVariant oobletWithVariant;
+
+  _OobletItem(this.oobletWithVariant) : super(key: ValueKey(oobletWithVariant));
+
+  @override
+  Widget build(BuildContext context) => Stack(
+        children: [
+          ApiImageWidget(
+            oobletWithVariant.variant.imageType,
+            oobletWithVariant.ooblet.id,
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: CaughtStatusToggle(
+              size: 30,
+              variant: oobletWithVariant.variant,
+              ooblet: oobletWithVariant.ooblet.id,
+            ),
+          ),
+        ],
+      );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../hooks/hooks.dart';
+import '../models/api_data.dart';
 
 class OobletsFilterButton extends HookWidget {
   final void Function() onPressed;
@@ -13,7 +14,8 @@ class OobletsFilterButton extends HookWidget {
       (state) =>
           state.oobletsSlice.variantsFilter.isNotEmpty ||
           state.oobletsSlice.locationsFilter.isNotEmpty ||
-          state.oobletsSlice.nameFilter.isNotEmpty,
+          state.oobletsSlice.nameFilter.isNotEmpty ||
+          state.oobletsSlice.caughtStatusFilter != OobletCaughtStatus.any,
     );
     return Container(
       width: 72,

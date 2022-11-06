@@ -89,18 +89,10 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
       return data; // data already loaded
     }
 
-    final stopwatch = Stopwatch()..start();
     data = await GetIt.I<ApiCacheService>().fetch(type, id);
     if (data != null) {
       _loadedData = data;
       _status = ApiFetcherStatus.loadedFromCache;
-      _logger.d(
-        'Cache hit for ${type.name} with id $id took ${stopwatch.elapsed}',
-      );
-    } else {
-      _logger.d(
-        'Cache miss for ${type.name} with id $id took ${stopwatch.elapsed}',
-      );
     }
     return data;
   }
@@ -117,11 +109,7 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
     _status = ApiFetcherStatus.loadedFromRemote;
 
     // Store the retrieved data in persistent cache
-    final stopwatch = Stopwatch()..start();
     await GetIt.I<ApiCacheService>().store(data);
-    _logger.d(
-      'Cache store for ${type.name} with id $id took ${stopwatch.elapsed}',
-    );
 
     return data;
   }
@@ -185,7 +173,6 @@ class _ApiHttpsService implements ApiRemoteService {
   Future<T> fetch<T extends ApiData>(ApiDataType<T> type, String id) async {
     final client = RetryClient(http.Client());
     final uri = _uri(_path(type, id));
-    final stopwatch = Stopwatch()..start();
     try {
       final response = await client.get(uri);
       if (!response.ok) {
@@ -194,7 +181,6 @@ class _ApiHttpsService implements ApiRemoteService {
       return ApiData.fromResponseBodyBytes(type, id, response.bodyBytes);
     } finally {
       client.close();
-      _logger.d('Call to $uri took ${stopwatch.elapsed}');
     }
   }
 
