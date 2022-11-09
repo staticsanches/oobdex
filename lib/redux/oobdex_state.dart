@@ -29,6 +29,14 @@ Future<void> clearCacheAction(Store<OobdexState> store) async {
   store._initialDispatch();
 }
 
+Future<void> clearUserDataAction(Store<OobdexState> store) async {
+  await OobletsCaughtStatusService.instance.clearAll();
+  store.dispatch(const LoadOobletsCaughtStatusAction());
+  if (store.state.oobletsSlice.caughtStatusFilter != OobletCaughtStatus.any) {
+    await store.dispatch(fetchOobletsAction);
+  }
+}
+
 // Actions - end
 
 // Reducers - start

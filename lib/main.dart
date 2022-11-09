@@ -3,7 +3,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'pages/all_ooblets_page.dart';
 import 'pages/home_page.dart';
 import 'redux/redux.dart';
 import 'utils/api.dart';
@@ -38,12 +37,11 @@ class OobdexApp extends StatelessWidget {
           useMaterial3: true,
           primarySwatch: Colors.lightGreen,
         ),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         initialRoute: HomePage.routeName,
         routes: {
           HomePage.routeName: (_) => const HomePage(),
-          AllOobletsPage.routeName: (_) => const AllOobletsPage(),
         },
       ),
     );

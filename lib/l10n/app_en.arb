@@ -1,7 +1,7 @@
 {
   "oobdex": "Oobdex",
   "ooblets": "Ooblets",
-  "clearCache": "Clear cache",
+  "clearCache": "Clear Cache",
   "clearCacheSuccess": "Cache successfully cleared",
   "clearCacheFail": "Cache was not cleared",
   "oobletVariants": "Variants",
@@ -17,5 +17,15 @@
   "oobletCaughtStatus": "Caught Status",
   "oobletCaughtStatusAny": "Any",
   "oobletCaughtStatusCaught": "Caught",
-  "oobletCaughtStatusMissing": "Missing"
+  "oobletCaughtStatusMissing": "Missing",
+  "settings": "Settings",
+  "items": "Items",
+  "moves": "Moves",
+  "clearUserData": "Clear User Data",
+  "areYouSure": "Are you sure?",
+  "clearUserDataConfirmationMessage": "All saved user data, such as Ooblets caught status, will be lost.\n\nDo you want to continue?",
+  "yes": "Yes",
+  "no": "No",
+  "clearUserDataSuccess": "User data successfully cleared",
+  "clearUserDataFail": "User data was not cleared"
 }
