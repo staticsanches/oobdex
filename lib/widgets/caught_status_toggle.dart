@@ -30,8 +30,8 @@ class CaughtStatusToggle extends HookWidget {
     return IconButton(
       iconSize: size,
       icon: Icon(
-        caught ? Icons.star : Icons.star_outline,
-        color: Theme.of(context).primaryColor,
+        caught ? Icons.lock : Icons.lock_open,
+        color: Theme.of(context).colorScheme.primary,
       ),
       onPressed: () => dispatch(
         updateOobletCaughtStatus(variant, ooblet, !caught, fetchOoblets),

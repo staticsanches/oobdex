@@ -21,12 +21,8 @@ class OobletsFilter extends HookWidget {
       updateAction: updateNameOobletsFilterAction,
     );
 
-    const startDivider = Expanded(
-      child: Divider(endIndent: 20, color: Colors.black),
-    );
-    const endDivider = Expanded(
-      child: Divider(indent: 20, color: Colors.black),
-    );
+    const startDivider = Expanded(child: Divider(endIndent: 20));
+    const endDivider = Expanded(child: Divider(indent: 20));
 
     return SafeArea(
       child: SingleChildScrollView(

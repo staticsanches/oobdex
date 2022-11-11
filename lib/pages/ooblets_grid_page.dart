@@ -55,10 +55,9 @@ class OobletsGridPage extends HookWidget {
       appBar: AppBar(
         title: const _Title(),
         actions: [
-          if (!hasErrorLoadingOoblets && !loadingOoblets)
-            _FilterButton(
-              () => scaffoldKey.currentState?.openEndDrawer(),
-            ),
+          _FilterButton(
+            () => scaffoldKey.currentState?.openEndDrawer(),
+          ),
         ],
       ),
       body: body,
@@ -78,13 +77,8 @@ class _Title extends HookWidget {
     );
     return Badge(
       toAnimate: false,
-      badgeContent: Text(
-        '$oobletsLenght',
-        style: TextStyle(
-          color: Theme.of(context).secondaryHeaderColor,
-        ),
-      ),
-      badgeColor: Theme.of(context).primaryColor,
+      badgeContent: Text('$oobletsLenght'),
+      badgeColor: Theme.of(context).colorScheme.primaryContainer,
       position: const BadgePosition(end: -25),
       child: Text(appLocalizations.ooblets),
     );
