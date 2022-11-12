@@ -41,7 +41,7 @@ class _OobletsCaughtStatusService extends OobletsCaughtStatusService {
 
   @override
   Future<void> init() async {
-    final Map<OobletVariant, Box<bool>> boxes = {};
+    final boxes = <OobletVariant, Box<bool>>{};
     for (final variant in OobletVariant.values) {
       final box = await Hive.openBox<bool>('${variant.name}CaughtStatusBox');
       boxes[variant] = box;

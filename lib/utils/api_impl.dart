@@ -116,7 +116,7 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
 }
 
 class _ApiHiveService implements ApiCacheService {
-  final Map<ApiDataType, ReadWriteMutex> _mutexMap = {};
+  final _mutexMap = <ApiDataType, ReadWriteMutex>{};
 
   String _boxName(ApiDataType type) => '${type.name}ApiCacheBox';
 
