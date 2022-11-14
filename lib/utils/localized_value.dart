@@ -11,8 +11,12 @@ class LocalizedValue<T> {
   final T defaultValue;
   final Map<Locale, T> values;
 
-  LocalizedValue({required this.defaultValue, Map<Locale, T> values = const {}})
-      : values = Map.unmodifiable(values);
+  const LocalizedValue({required this.defaultValue, this.values = const {}});
+
+  LocalizedValue.unmodifiable({
+    required T defaultValue,
+    Map<Locale, T> values = const {},
+  }) : this(defaultValue: defaultValue, values: Map.unmodifiable(values));
 
   T get value => this[Locale.tryParse(Intl.getCurrentLocale())];
 

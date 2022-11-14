@@ -1,6 +1,7 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/locale.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/api_data.dart';
 import 'api.dart';
@@ -49,4 +50,13 @@ extension OobletCaughtStatusExtension on OobletCaughtStatus {
 
 extension MapExtension<K, V> on Map<K, V> {
   V? get(K key) => this[key];
+}
+
+extension UriLaunch on Uri {
+  Future<bool> launch() async {
+    if (await canLaunchUrl(this)) {
+      return await launchUrl(this);
+    }
+    throw 'Unable to lauch $this';
+  }
 }

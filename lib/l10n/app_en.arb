@@ -27,5 +27,9 @@
   "yes": "Yes",
   "no": "No",
   "clearUserDataSuccess": "User data successfully cleared",
-  "clearUserDataFail": "User data was not cleared"
+  "clearUserDataFail": "User data was not cleared",
+  "aboutButtonLabel": "About",
+  "aboutPageTitle": "About",
+  "attribution": "Attribution",
+  "showLicensesButton": "Licenses"
 }

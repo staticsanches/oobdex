@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart' hide Store;
@@ -15,4 +16,5 @@ part 'use_dispatch.dart';
 part 'use_responsive_value.dart';
 part 'use_selector.dart';
 part 'use_store.dart';
+part 'use_tap_gesture_recognizer.dart';
 part 'use_text_editing_controller_with_store.dart';

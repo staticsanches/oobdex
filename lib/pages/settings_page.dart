@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../hooks/hooks.dart';
 import '../redux/redux.dart';
+import 'about_page.dart';
 
 class SettingsPage extends HookWidget {
   const SettingsPage({super.key});
@@ -17,10 +18,16 @@ class SettingsPage extends HookWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            _ClearCacheButton(),
-            SizedBox(height: 20),
-            _ClearUserDataButton(),
+          children: [
+            const _ClearCacheButton(),
+            const SizedBox(height: 20),
+            const _ClearUserDataButton(),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              child: Text(appLocalizations.aboutButtonLabel),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AboutPage.routeName),
+            )
           ],
         ),
       ),

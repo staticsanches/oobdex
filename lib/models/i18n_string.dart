@@ -17,5 +17,5 @@ class I18nString extends LocalizedValue<String> {
   }
 
   I18nString._(String defaultValue, Map<Locale, String> values)
-      : super(defaultValue: defaultValue, values: values);
+      : super.unmodifiable(defaultValue: defaultValue, values: values);
 }

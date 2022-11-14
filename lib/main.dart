@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'pages/about_page.dart';
 import 'pages/home_page.dart';
 import 'redux/redux.dart';
 import 'utils/api.dart';
@@ -45,6 +46,7 @@ class OobdexApp extends StatelessWidget {
         initialRoute: HomePage.routeName,
         routes: {
           HomePage.routeName: (_) => const HomePage(),
+          AboutPage.routeName: (_) => const AboutPage(),
         },
       ),
     );
