@@ -22,6 +22,8 @@ class Location implements ApiData {
   @override
   ApiDataType<Location> get apiDataType => ApiDataType.location;
 
+  Future<ApiImage> fetchImage() => ApiDataType.locationImage.fetch(id);
+
   Stream<Ooblet> fetchOoblets() => ApiDataType.ooblet.fetchMany(oobletsIDs);
 
   Stream<Item> fetchItems() => ApiDataType.item.fetchMany(itemsIDs);
@@ -36,12 +38,10 @@ class Location implements ApiData {
       };
 
   @override
-  @nonVirtual
   bool operator ==(Object other) =>
       identical(this, other) || (other is Location && id == other.id);
 
   @override
-  @nonVirtual
   int get hashCode => id.hashCode;
 
   @override

@@ -205,6 +205,11 @@ void main() {
     expect(fetcher.status, ApiFetcherStatus.loadedFromCache);
 
     expect(
+      await location.fetchImage(),
+      predicate((ApiImage image) => image.id == location.id),
+    );
+
+    expect(
       location.fetchOoblets(),
       emitsInOrder(
         location.oobletsIDs
@@ -248,6 +253,30 @@ void main() {
             .map((id) => predicate((Location location) => location.id == id)),
       ),
     );
+  });
+
+  test('Check api call for locationImage', () async {
+    final fetcher =
+        ApiManager.instance.fetcher(ApiDataType.locationImage, 'badgetown');
+    expect(fetcher.status, ApiFetcherStatus.notLoaded);
+
+    final image = await fetcher.fetch();
+    expect(fetcher.status, ApiFetcherStatus.loadedFromRemote);
+    expect(image.runtimeType, ApiImage);
+    expect(image.apiDataType, ApiDataType.locationImage);
+    expect(identical(image, await fetcher.fetch()), true);
+
+    fetcher.reset();
+    expect(fetcher.status, ApiFetcherStatus.notLoaded);
+
+    expect(identical(image, await fetcher.fetch()), false);
+    expect(fetcher.status, ApiFetcherStatus.loadedFromCache);
+
+    expect(image, await fetcher.fetch());
+    expect(fetcher.status, ApiFetcherStatus.loadedFromCache);
+
+    expect(identical(await fetcher.fetch(), await fetcher.fetch()), true);
+    expect(fetcher.status, ApiFetcherStatus.loadedFromCache);
   });
 
   test('Check api call for Ooblet', () async {

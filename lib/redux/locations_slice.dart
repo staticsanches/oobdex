@@ -84,20 +84,15 @@ class _UpdateLocationsSliceAction {
 
 // Reducers - start
 
-LocationsSlice _updateLocationsReducer(
-  LocationsSlice state,
-  _UpdateLocationsSliceAction action,
-) =>
-    state._copyWith(
+LocationsSlice _locationsReducer(LocationsSlice state, dynamic action) {
+  if (action is _UpdateLocationsSliceAction) {
+    return state._copyWith(
       locations: action.locations,
       loadingLocations: action.loadingLocations,
       hasErrorLoadingLocations: action.hasErrorLoadingLocations,
     );
-
-final _locationsReducer = combineReducers<LocationsSlice>([
-  TypedReducer<LocationsSlice, _UpdateLocationsSliceAction>(
-    _updateLocationsReducer,
-  ),
-]);
+  }
+  return state;
+}
 
 // Reducers - end

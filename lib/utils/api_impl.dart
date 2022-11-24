@@ -194,10 +194,14 @@ class _ApiHttpsService implements ApiRemoteService {
         return '/items/$id/data.json';
       case ApiDataType.itemImage:
         return '/items/$id/image.png';
+
       case ApiDataType.allLocations:
         return '/locations/all.json';
       case ApiDataType.location:
         return '/locations/$id/data.json';
+      case ApiDataType.locationImage:
+        return '/locations/$id/image.png';
+
       case ApiDataType.allOoblets:
         return '/ooblets/all.json';
       case ApiDataType.ooblet:
@@ -208,6 +212,7 @@ class _ApiHttpsService implements ApiRemoteService {
         return '/ooblets/$id/gleamy.png';
       case ApiDataType.oobletUnusualImage:
         return '/ooblets/$id/unusual.png';
+
       case ApiDataType.allMoves:
         return '/moves/all.json';
       case ApiDataType.move:

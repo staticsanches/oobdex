@@ -26,6 +26,7 @@ enum ApiDataType<T extends ApiData> {
 
   allLocations<AllLocations>(),
   location<Location>(),
+  locationImage<ApiImage>(),
 
   allOoblets<AllOoblets>(),
   ooblet<Ooblet>(),
@@ -40,6 +41,7 @@ enum ApiDataType<T extends ApiData> {
 
   bool get _isImageType =>
       this == ApiDataType.itemImage ||
+      this == ApiDataType.locationImage ||
       this == ApiDataType.oobletCommonImage ||
       this == ApiDataType.oobletGleamyImage ||
       this == ApiDataType.oobletUnusualImage ||
