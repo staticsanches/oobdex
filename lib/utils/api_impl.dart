@@ -130,8 +130,11 @@ class _ApiHiveService implements ApiCacheService {
     await mutex.acquireWrite();
     try {
       final box = await Hive.openLazyBox<T>(_boxName(type));
-      await box.put(data.id, data);
-      await box.close();
+      try {
+        await box.put(data.id, data);
+      } finally {
+        await box.close();
+      }
     } finally {
       mutex.release();
     }
@@ -143,9 +146,11 @@ class _ApiHiveService implements ApiCacheService {
     await mutex.acquireRead();
     try {
       final box = await Hive.openLazyBox<T>(_boxName(type));
-      final data = await box.get(id);
-      await box.close();
-      return data;
+      try {
+        return await box.get(id);
+      } finally {
+        await box.close();
+      }
     } finally {
       mutex.release();
     }
@@ -157,8 +162,11 @@ class _ApiHiveService implements ApiCacheService {
     await mutex.acquireWrite();
     try {
       final box = await Hive.openLazyBox<T>(_boxName(type));
-      await box.clear();
-      await box.close();
+      try {
+        await box.clear();
+      } finally {
+        await box.close();
+      }
     } finally {
       mutex.release();
     }
