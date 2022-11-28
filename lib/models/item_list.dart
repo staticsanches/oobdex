@@ -5,13 +5,12 @@ part of 'api_data.dart';
 class ItemList {
   final List<ItemListElement> elements;
 
-  ItemList._fromJson(Map<String, dynamic> json)
+  ItemList._fromJson(List<dynamic> jsonList)
       : elements = List.unmodifiable(
-          json.entries
-              .map((entry) => ItemListElement._(entry.key, entry.value)),
+          jsonList.map((json) => ItemListElement._fromJson(json)),
         );
 
-  Map<String, int> toJson() => {for (final e in elements) e.itemID: e.quantity};
+  List<ItemListElement> toJson() => elements;
 
   @override
   operator ==(Object other) =>
@@ -31,9 +30,16 @@ class ItemListElement {
   final String itemID;
   final int quantity;
 
-  const ItemListElement._(this.itemID, this.quantity);
+  ItemListElement._fromJson(Map<String, dynamic> json)
+      : itemID = json['item'],
+        quantity = json['quantity'];
 
   Future<Item> fetchItem() => ApiDataType.item.fetch(itemID);
+
+  Map<String, dynamic> toJson() => {
+        'item': itemID,
+        'quantity': quantity,
+      };
 
   @override
   operator ==(Object other) =>

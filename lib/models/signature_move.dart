@@ -5,15 +5,15 @@ part of 'api_data.dart';
 class SignatureMoveList {
   final List<SignatureMove> elements;
 
-  SignatureMoveList._fromJson(Map<String, dynamic> json)
+  SignatureMoveList._fromJson(List<dynamic> jsonList)
       : elements = List.unmodifiable(
-          json.entries
-              .map((entry) => SignatureMove._(entry.key, entry.value))
+          jsonList
+              .map((json) => SignatureMove._fromJson(json))
               .toList(growable: false)
             ..sort((m1, m2) => m1.level - m2.level),
         );
 
-  Map<String, int> toJson() => {for (final e in elements) e.moveID: e.level};
+  List<SignatureMove> toJson() => elements;
 
   @override
   operator ==(Object other) =>
@@ -33,9 +33,16 @@ class SignatureMove {
   final String moveID;
   final int level;
 
-  const SignatureMove._(this.moveID, this.level);
+  SignatureMove._fromJson(Map<String, dynamic> json)
+      : moveID = json['move'],
+        level = json['level'];
 
   Future<Move> fetchMove() => ApiDataType.move.fetch(moveID);
+
+  Map<String, dynamic> toJson() => {
+        'move': moveID,
+        'level': level,
+      };
 
   @override
   operator ==(Object other) =>
