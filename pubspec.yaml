@@ -27,6 +27,7 @@ dependencies:
   meta: ^1.8.0
   mutex: ^3.0.0
   redux: ^5.0.0
+  shared_preferences: ^2.0.15
   url_launcher: ^6.1.6
 
 dev_dependencies:

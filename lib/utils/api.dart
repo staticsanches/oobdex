@@ -10,6 +10,7 @@ import 'package:meta/meta.dart';
 import 'package:mutex/mutex.dart';
 
 import '../models/api_data.dart';
+import 'api_uri.dart';
 import 'extensions.dart';
 
 part 'api_impl.dart';

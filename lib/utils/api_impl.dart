@@ -174,13 +174,10 @@ class _ApiHiveService implements ApiCacheService {
 }
 
 class _ApiHttpsService implements ApiRemoteService {
-  static const _authority = 'staticsanches.github.io';
-  static const _pathPrefix = '/ooblets_api/api/v1';
-
   @override
   Future<T> fetch<T extends ApiData>(ApiDataType<T> type, String id) async {
     final client = RetryClient(http.Client());
-    final uri = _uri(_path(type, id));
+    final uri = apiUri(_path(type, id));
     try {
       final response = await client.get(uri);
       if (!response.ok) {
@@ -191,8 +188,6 @@ class _ApiHttpsService implements ApiRemoteService {
       client.close();
     }
   }
-
-  Uri _uri(String path) => Uri.https(_authority, _pathPrefix + path);
 
   String _path(ApiDataType type, String id) {
     switch (type) {

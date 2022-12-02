@@ -7,11 +7,13 @@ import 'pages/about_page.dart';
 import 'pages/home_page.dart';
 import 'redux/redux.dart';
 import 'utils/api.dart';
+import 'utils/api_version_service.dart';
 import 'utils/ooblets_caught_status_service.dart';
 
 void main() async {
   registerApiGetItTypes();
   registerOobletsCaughtStatusGetItTypes();
+  registerApiVersionServiceGetItTypes();
 
   Hive.registerAdapter(ApiDataTypeAdapter());
   await Hive.initFlutter('oobdex');
@@ -19,6 +21,16 @@ void main() async {
   await OobletsCaughtStatusService.instance.init();
 
   final store = createStore();
+
+  // Check if the api version is valid
+  final apiVersionService = ApiVersionService.instance;
+  final remoteVersion = await apiVersionService.fetchTimestampVersion();
+  final localVersion = await apiVersionService.retrieveStoredTimestampVersion();
+  if (localVersion == null || remoteVersion > localVersion) {
+    await apiVersionService.updateStoredTimestampVersion(remoteVersion);
+    await store.dispatch(clearCacheAction);
+  }
+
   runApp(OobdexApp(store));
 }
 
