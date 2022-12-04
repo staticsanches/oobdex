@@ -3,6 +3,7 @@ part of 'redux.dart';
 @sealed
 @immutable
 class OobletsSlice {
+  final List<Ooblet> allOoblets;
   final List<Ooblet> ooblets;
   final List<OobletWithVariant> oobletsWithVariants;
 
@@ -17,6 +18,7 @@ class OobletsSlice {
   final Map<OobletVariant, Map<String, bool>> variantCaughtStatus;
 
   const OobletsSlice._({
+    this.allOoblets = const [],
     this.ooblets = const [],
     this.oobletsWithVariants = const [],
     this.loadingOoblets = true,
@@ -29,6 +31,7 @@ class OobletsSlice {
   });
 
   OobletsSlice _copyWith({
+    List<Ooblet>? allOoblets,
     List<Ooblet>? ooblets,
     List<OobletWithVariant>? oobletsWithVariants,
     bool? loadingOoblets,
@@ -40,6 +43,7 @@ class OobletsSlice {
     Map<OobletVariant, Map<String, bool>>? variantCaughtStatus,
   }) =>
       OobletsSlice._(
+        allOoblets: allOoblets ?? this.allOoblets,
         ooblets: ooblets ?? this.ooblets,
         oobletsWithVariants: oobletsWithVariants ?? this.oobletsWithVariants,
         loadingOoblets: loadingOoblets ?? this.loadingOoblets,
@@ -56,6 +60,7 @@ class OobletsSlice {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is OobletsSlice &&
+          listEquals(allOoblets, other.allOoblets) &&
           listEquals(ooblets, other.ooblets) &&
           listEquals(oobletsWithVariants, other.oobletsWithVariants) &&
           loadingOoblets == other.loadingOoblets &&
@@ -68,6 +73,7 @@ class OobletsSlice {
 
   @override
   int get hashCode => Object.hash(
+        Object.hashAll(allOoblets),
         Object.hashAll(ooblets),
         Object.hashAll(oobletsWithVariants),
         loadingOoblets,
@@ -84,6 +90,7 @@ class OobletsSlice {
 
 Future<void> fetchOobletsAction(Store<OobdexState> store) async {
   store.dispatch(const _UpdateOobletsSliceAction(
+    allOoblets: [],
     ooblets: [],
     oobletsWithVariants: [],
     loadingOoblets: true,
@@ -98,6 +105,7 @@ Future<void> fetchOobletsAction(Store<OobdexState> store) async {
 
     final allOoblets = await ApiManager.instance.fetchAllOoblets();
 
+    final allOobletsSet = SplayTreeSet<Ooblet>(_compareOoblets);
     final ooblets = SplayTreeSet<Ooblet>(_compareOoblets);
     final oobletsWithVariants = SplayTreeSet<OobletWithVariant>((o1, o2) {
       var result = _compareOoblets(o1.ooblet, o2.ooblet);
@@ -107,6 +115,7 @@ Future<void> fetchOobletsAction(Store<OobdexState> store) async {
       return result;
     });
     await for (final ooblet in allOoblets.fetchOoblets()) {
+      allOobletsSet.add(ooblet);
       if (locationsFilter.isNotEmpty &&
           !locationsFilter.contains(ooblet.locationID)) {
         continue; // invalid location
@@ -132,6 +141,7 @@ Future<void> fetchOobletsAction(Store<OobdexState> store) async {
     }
 
     store.dispatch(_UpdateOobletsSliceAction(
+      allOoblets: List.unmodifiable(allOobletsSet).cast(),
       ooblets: List.unmodifiable(ooblets).cast(),
       oobletsWithVariants: List.unmodifiable(oobletsWithVariants).cast(),
       loadingOoblets: false,
@@ -258,6 +268,7 @@ class LoadOobletsCaughtStatusAction {
 }
 
 class _UpdateOobletsSliceAction {
+  final List<Ooblet>? allOoblets;
   final List<Ooblet>? ooblets;
   final List<OobletWithVariant>? oobletsWithVariants;
 
@@ -272,6 +283,7 @@ class _UpdateOobletsSliceAction {
   final Map<OobletVariant, Map<String, bool>>? variantCaughtStatus;
 
   const _UpdateOobletsSliceAction({
+    this.allOoblets,
     this.ooblets,
     this.oobletsWithVariants,
     this.loadingOoblets,
@@ -291,6 +303,7 @@ class _UpdateOobletsSliceAction {
 OobletsSlice _oobletsReducer(OobletsSlice state, dynamic action) {
   if (action is _UpdateOobletsSliceAction) {
     return state._copyWith(
+      allOoblets: action.allOoblets,
       ooblets: action.ooblets,
       oobletsWithVariants: action.oobletsWithVariants,
       loadingOoblets: action.loadingOoblets,

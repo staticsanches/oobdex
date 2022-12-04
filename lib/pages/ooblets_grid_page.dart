@@ -7,6 +7,7 @@ import '../redux/redux.dart';
 import '../utils/extensions.dart';
 import '../widgets/api_image_widget.dart';
 import '../widgets/caught_status_toggle.dart';
+import '../widgets/clickable_card.dart';
 import '../widgets/ooblets_filter.dart';
 
 class OobletsGridPage extends HookWidget {
@@ -100,13 +101,11 @@ class _OobletsGridView extends HookWidget {
     return oobletsWithVariants.isEmpty
         ? Center(child: Text(appLocalizations.noOobletsFound))
         : Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(4),
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
                 childAspectRatio: 3 / 4,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
               ),
               itemCount: oobletsWithVariants.length,
               itemBuilder: (_, index) =>
@@ -127,26 +126,32 @@ class _OobletItem extends HookWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        InkWell(
-          onTap: () {},
-          customBorder: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
+        ClickableCard(
+          margin: const EdgeInsets.all(4),
           child: Column(
             children: [
               Expanded(
-                child: ApiImageWidget(
-                  oobletWithVariant.variant.imageType,
-                  oobletWithVariant.ooblet.id,
+                child: Center(
+                  child: ApiImageWidget(
+                    oobletWithVariant.variant.imageType,
+                    oobletWithVariant.ooblet.id,
+                  ),
                 ),
               ),
-              Text(
-                oobletWithVariant.ooblet.name.toString(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '(${oobletWithVariant.variant.getName(appLocalizations).toLowerCase()})',
-                style: Theme.of(context).textTheme.labelSmall,
+              Padding(
+                padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
+                child: Column(
+                  children: [
+                    Text(
+                      oobletWithVariant.ooblet.name.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '(${oobletWithVariant.variant.getName(appLocalizations).toLowerCase()})',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
