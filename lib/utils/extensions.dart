@@ -60,3 +60,18 @@ extension UriLaunch on Uri {
     throw 'Unable to lauch $this';
   }
 }
+
+extension ItemTypeExtension on ItemType {
+  String getName(AppLocalizations appLocalizations) {
+    switch (this) {
+      case ItemType.cookedFood:
+        return appLocalizations.itemTypeCookedFood;
+      case ItemType.forageable:
+        return appLocalizations.itemTypeForageable;
+      case ItemType.ingredient:
+        return appLocalizations.itemTypeIngredient;
+      case ItemType.rawCrop:
+        return appLocalizations.itemTypeRawCrop;
+    }
+  }
+}

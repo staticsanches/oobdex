@@ -10,7 +10,9 @@ class ApiImageWidget extends HookWidget {
   final ApiDataType<ApiImage> type;
   final String id;
 
-  const ApiImageWidget(this.type, this.id, {super.key});
+  final BoxFit? fit;
+
+  const ApiImageWidget(this.type, this.id, {super.key, this.fit});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class ApiImageWidget extends HookWidget {
     } else if (data != null) {
       return Image.memory(
         Uint8List.fromList(data.content),
+        fit: fit,
       );
     }
     return const Center(child: CircularProgressIndicator());

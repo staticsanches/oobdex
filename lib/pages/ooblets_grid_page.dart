@@ -9,15 +9,13 @@ import '../widgets/api_image_widget.dart';
 import '../widgets/caught_status_toggle.dart';
 import '../widgets/clickable_card.dart';
 import '../widgets/ooblets_filter.dart';
+import '../widgets/retry_fetch_widget.dart';
 
 class OobletsGridPage extends HookWidget {
   const OobletsGridPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final appLocalizations = useAppLocalizations();
-    final dispatch = useDispatch();
-
     final hasErrorLoadingOoblets =
         useSelector((state) => state.oobletsSlice.hasErrorLoadingOoblets);
     final loadingOoblets =
@@ -27,24 +25,7 @@ class OobletsGridPage extends HookWidget {
 
     final Widget body;
     if (hasErrorLoadingOoblets) {
-      body = Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              color: Colors.red,
-            ),
-            const SizedBox(height: 10),
-            Text(appLocalizations.anErrorOccurred),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => dispatch(fetchOobletsAction),
-              child: Text(appLocalizations.retry),
-            ),
-          ],
-        ),
-      );
+      body = const RetryFetchWidget(fetchOobletsAction);
     } else if (loadingOoblets) {
       body = const Center(child: CircularProgressIndicator());
     } else {
@@ -95,7 +76,7 @@ class _OobletsGridView extends HookWidget {
     final oobletsWithVariants =
         useSelector((state) => state.oobletsSlice.oobletsWithVariants);
     final crossAxisCount = useResponsiveValue(
-      const Breakpoints(xs: 3, sm: 4, md: 5, lg: 6, xl: 7),
+      const Breakpoints(xs: 3, sm: 4, md: 5, lg: 6, xl: 7, xxl: 8),
     );
 
     return oobletsWithVariants.isEmpty
@@ -109,16 +90,16 @@ class _OobletsGridView extends HookWidget {
               ),
               itemCount: oobletsWithVariants.length,
               itemBuilder: (_, index) =>
-                  _OobletItem(oobletsWithVariants[index]),
+                  _OobletCard(oobletsWithVariants[index]),
             ),
           );
   }
 }
 
-class _OobletItem extends HookWidget {
+class _OobletCard extends HookWidget {
   final OobletWithVariant oobletWithVariant;
 
-  _OobletItem(this.oobletWithVariant) : super(key: ValueKey(oobletWithVariant));
+  _OobletCard(this.oobletWithVariant) : super(key: ValueKey(oobletWithVariant));
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +125,10 @@ class _OobletItem extends HookWidget {
                   children: [
                     Text(
                       oobletWithVariant.ooblet.name.toString(),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     Text(
                       '(${oobletWithVariant.variant.getName(appLocalizations).toLowerCase()})',

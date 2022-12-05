@@ -6,6 +6,7 @@ import '../redux/redux.dart';
 import '../utils/extensions.dart';
 import '../widgets/api_image_widget.dart';
 import '../widgets/clickable_card.dart';
+import '../widgets/retry_fetch_widget.dart';
 import '../widgets/square_box.dart';
 
 class LocationsGridPage extends HookWidget {
@@ -14,7 +15,6 @@ class LocationsGridPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = useAppLocalizations();
-    final dispatch = useDispatch();
 
     final hasErrorLoadingLocations =
         useSelector((state) => state.locationsSlice.hasErrorLoadingLocations);
@@ -23,24 +23,7 @@ class LocationsGridPage extends HookWidget {
 
     final Widget body;
     if (hasErrorLoadingLocations) {
-      body = Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              color: Colors.red,
-            ),
-            const SizedBox(height: 10),
-            Text(appLocalizations.anErrorOccurred),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => dispatch(fetchLocationsAction),
-              child: Text(appLocalizations.retry),
-            ),
-          ],
-        ),
-      );
+      body = const RetryFetchWidget(fetchLocationsAction);
     } else if (loadingLocations) {
       body = const Center(child: CircularProgressIndicator());
     } else {
@@ -74,16 +57,16 @@ class _LocationsGridView extends HookWidget {
           childAspectRatio: 15 / 7,
         ),
         itemCount: locations.length,
-        itemBuilder: (_, index) => _LocationItem(locations[index]),
+        itemBuilder: (_, index) => _LocationCard(locations[index]),
       ),
     );
   }
 }
 
-class _LocationItem extends HookWidget {
+class _LocationCard extends HookWidget {
   final Location location;
 
-  _LocationItem(this.location) : super(key: ValueKey(location));
+  _LocationCard(this.location) : super(key: ValueKey(location));
 
   @override
   Widget build(BuildContext context) {

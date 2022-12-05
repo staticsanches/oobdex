@@ -31,5 +31,10 @@
   "aboutButtonLabel": "About",
   "aboutPageTitle": "About",
   "attribution": "Attribution",
-  "showLicensesButton": "Licenses"
+  "showLicensesButton": "Licenses",
+  "itemTypes": "Types",
+  "itemTypeCookedFood": "Cooked Food",
+  "itemTypeForageable": "Forageable",
+  "itemTypeIngredient": "Ingredient",
+  "itemTypeRawCrop": "Raw Crop"
 }

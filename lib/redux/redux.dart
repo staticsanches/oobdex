@@ -11,6 +11,7 @@ import '../utils/ooblets_caught_status_service.dart';
 
 export 'package:redux/redux.dart';
 
+part 'items_slice.dart';
 part 'locations_slice.dart';
 part 'oobdex_state.dart';
 part 'ooblets_slice.dart';
@@ -27,5 +28,6 @@ extension _OobdexStore on Store<OobdexState> {
     dispatch(const LoadOobletsCaughtStatusAction());
     dispatch(fetchOobletsAction);
     dispatch(fetchLocationsAction);
+    dispatch(fetchItemsAction);
   }
 }

@@ -5,10 +5,12 @@ part of 'redux.dart';
 class OobdexState {
   final OobletsSlice oobletsSlice;
   final LocationsSlice locationsSlice;
+  final ItemsSlice itemsSlice;
 
   const OobdexState._({
     this.oobletsSlice = const OobletsSlice._(),
     this.locationsSlice = const LocationsSlice._(),
+    this.itemsSlice = const ItemsSlice._(),
   });
 
   @override
@@ -16,10 +18,11 @@ class OobdexState {
       identical(this, other) ||
       (other is OobdexState &&
           oobletsSlice == other.oobletsSlice &&
-          locationsSlice == other.locationsSlice);
+          locationsSlice == other.locationsSlice &&
+          itemsSlice == other.itemsSlice);
 
   @override
-  int get hashCode => Object.hash(oobletsSlice, locationsSlice);
+  int get hashCode => Object.hash(oobletsSlice, locationsSlice, itemsSlice);
 }
 
 // Actions - start
@@ -44,6 +47,7 @@ Future<void> clearUserDataAction(Store<OobdexState> store) async {
 OobdexState _oobdexStateReducer(OobdexState state, action) => OobdexState._(
       oobletsSlice: _oobletsReducer(state.oobletsSlice, action),
       locationsSlice: _locationsReducer(state.locationsSlice, action),
+      itemsSlice: _itemsReducer(state.itemsSlice, action),
     );
 
 // Reducers - end

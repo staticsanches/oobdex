@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../hooks/hooks.dart';
 import '../widgets/responsive_builder.dart';
+import 'items_grid_page.dart';
 import 'locations_grid_page.dart';
 import 'ooblets_grid_page.dart';
 import 'settings_page.dart';
@@ -93,6 +94,8 @@ class HomePage extends HookWidget {
         return const OobletsGridPage();
       case 1:
         return const LocationsGridPage();
+      case 2:
+        return const ItemsGridPage();
       case 4:
         return const SettingsPage();
       default:
