@@ -22,7 +22,16 @@ void main() async {
 
   final store = createStore();
 
-  // Check if the api version is valid
+  try {
+    await _checkApiVersion(store);
+  } catch (_) {
+    // ignores the error
+  }
+
+  runApp(OobdexApp(store));
+}
+
+Future<void> _checkApiVersion(Store<OobdexState> store) async {
   final apiVersionService = ApiVersionService.instance;
   final remoteVersion = await apiVersionService.fetchTimestampVersion();
   final localVersion = await apiVersionService.retrieveStoredTimestampVersion();
@@ -30,8 +39,6 @@ void main() async {
     await apiVersionService.updateStoredTimestampVersion(remoteVersion);
     await store.dispatch(clearCacheAction);
   }
-
-  runApp(OobdexApp(store));
 }
 
 class OobdexApp extends StatelessWidget {

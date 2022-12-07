@@ -13,6 +13,7 @@ export 'package:redux/redux.dart';
 
 part 'items_slice.dart';
 part 'locations_slice.dart';
+part 'moves_slice.dart';
 part 'oobdex_state.dart';
 part 'ooblets_slice.dart';
 part 'thunk.dart';
@@ -29,5 +30,6 @@ extension _OobdexStore on Store<OobdexState> {
     dispatch(fetchOobletsAction);
     dispatch(fetchLocationsAction);
     dispatch(fetchItemsAction);
+    dispatch(fetchMovesAction);
   }
 }

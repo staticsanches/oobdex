@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../hooks/hooks.dart';
 import '../models/api_data.dart';
-import '../utils/api.dart';
+import '../utils/extensions.dart';
 
 class ApiImageWidget extends HookWidget {
   final ApiDataType<ApiImage> type;
@@ -17,10 +17,7 @@ class ApiImageWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final reloadToggle = useState(false);
-    final future = useMemoized(
-      () => ApiManager.instance.fetch(type, id),
-      [reloadToggle.value],
-    );
+    final future = useMemoized(() => type.fetch(id), [reloadToggle.value]);
     final snapshot = useFuture(future);
 
     final error = snapshot.error;
@@ -34,10 +31,7 @@ class ApiImageWidget extends HookWidget {
         ),
       );
     } else if (data != null) {
-      return Image.memory(
-        Uint8List.fromList(data.content),
-        fit: fit,
-      );
+      return Image.memory(Uint8List.fromList(data.content), fit: fit);
     }
     return const Center(child: CircularProgressIndicator());
   }

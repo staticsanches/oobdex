@@ -5,6 +5,7 @@ import '../hooks/hooks.dart';
 import '../widgets/responsive_builder.dart';
 import 'items_grid_page.dart';
 import 'locations_grid_page.dart';
+import 'moves_grid_page.dart';
 import 'ooblets_grid_page.dart';
 import 'settings_page.dart';
 
@@ -96,6 +97,8 @@ class HomePage extends HookWidget {
         return const LocationsGridPage();
       case 2:
         return const ItemsGridPage();
+      case 3:
+        return const MovesGridPage();
       case 4:
         return const SettingsPage();
       default:

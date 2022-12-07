@@ -125,6 +125,7 @@ class _OobletCard extends HookWidget {
                   children: [
                     Text(
                       oobletWithVariant.ooblet.name.toString(),
+                      textAlign: TextAlign.center,
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium
@@ -132,6 +133,7 @@ class _OobletCard extends HookWidget {
                     ),
                     Text(
                       '(${oobletWithVariant.variant.getName(appLocalizations).toLowerCase()})',
+                      textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],

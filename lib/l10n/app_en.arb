@@ -36,5 +36,6 @@
   "itemTypeCookedFood": "Cooked Food",
   "itemTypeForageable": "Forageable",
   "itemTypeIngredient": "Ingredient",
-  "itemTypeRawCrop": "Raw Crop"
+  "itemTypeRawCrop": "Raw Crop",
+  "moveCost": "Cost"
 }

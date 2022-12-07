@@ -3,46 +3,45 @@ import 'package:flutter/material.dart';
 import '../hooks/hooks.dart';
 import '../models/api_data.dart';
 import '../redux/redux.dart';
-import '../utils/extensions.dart';
 import '../widgets/api_image_widget.dart';
 import '../widgets/clickable_card.dart';
 import '../widgets/retry_fetch_widget.dart';
 
-class ItemsGridPage extends HookWidget {
-  const ItemsGridPage({super.key});
+class MovesGridPage extends HookWidget {
+  const MovesGridPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = useAppLocalizations();
 
-    final hasErrorLoadingItems =
-        useSelector((state) => state.itemsSlice.hasErrorLoadingItems);
-    final loadingItems = useSelector((state) => state.itemsSlice.loadingItems);
+    final hasErrorLoadingMoves =
+        useSelector((state) => state.movesSlice.hasErrorLoadingMoves);
+    final loadingMoves = useSelector((state) => state.movesSlice.loadingMoves);
 
     final Widget body;
-    if (hasErrorLoadingItems) {
-      body = const RetryFetchWidget(fetchItemsAction);
-    } else if (loadingItems) {
+    if (hasErrorLoadingMoves) {
+      body = const RetryFetchWidget(fetchMovesAction);
+    } else if (loadingMoves) {
       body = const Center(child: CircularProgressIndicator());
     } else {
-      body = const SafeArea(child: _ItemsGridView());
+      body = const SafeArea(child: _MovesGridView());
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(appLocalizations.items),
+        title: Text(appLocalizations.moves),
       ),
       body: body,
     );
   }
 }
 
-class _ItemsGridView extends HookWidget {
-  const _ItemsGridView();
+class _MovesGridView extends HookWidget {
+  const _MovesGridView();
 
   @override
   Widget build(BuildContext context) {
-    final items = useSelector((state) => state.itemsSlice.items);
+    final moves = useSelector((state) => state.movesSlice.moves);
     final crossAxisCount = useResponsiveValue(
       const Breakpoints(xs: 3, sm: 4, md: 5, lg: 6, xl: 7, xxl: 8),
     );
@@ -52,19 +51,19 @@ class _ItemsGridView extends HookWidget {
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
-          childAspectRatio: 3 / 4,
+          childAspectRatio: 5 / 8,
         ),
-        itemCount: items.length,
-        itemBuilder: (_, index) => _ItemCard(items[index]),
+        itemCount: moves.length,
+        itemBuilder: (_, index) => _MoveCard(moves[index]),
       ),
     );
   }
 }
 
-class _ItemCard extends HookWidget {
-  final Item item;
+class _MoveCard extends HookWidget {
+  final Move move;
 
-  const _ItemCard(this.item);
+  const _MoveCard(this.move);
 
   @override
   Widget build(BuildContext context) {
@@ -78,8 +77,8 @@ class _ItemCard extends HookWidget {
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: ApiImageWidget(
-                ApiDataType.itemImage,
-                item.id,
+                ApiDataType.moveImage,
+                move.id,
                 fit: BoxFit.contain,
               ),
             ),
@@ -90,7 +89,7 @@ class _ItemCard extends HookWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  item.name.toString(),
+                  move.name.toString(),
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
@@ -98,7 +97,7 @@ class _ItemCard extends HookWidget {
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '(${item.type.getName(appLocalizations).toLowerCase()})',
+                  '(${appLocalizations.moveCost.toLowerCase()}: ${move.cost})',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
