@@ -57,11 +57,21 @@ class _Title extends HookWidget {
     final oobletsLenght = useSelector(
       (state) => state.oobletsSlice.oobletsWithVariants.length,
     );
+
+    final BadgePosition badgePosition;
+    if (oobletsLenght < 10) {
+      badgePosition = const BadgePosition(end: -25);
+    } else if (oobletsLenght < 100) {
+      badgePosition = const BadgePosition(end: -30);
+    } else {
+      badgePosition = const BadgePosition(end: -35);
+    }
+
     return Badge(
       toAnimate: false,
       badgeContent: Text('$oobletsLenght'),
       badgeColor: Theme.of(context).colorScheme.primaryContainer,
-      position: const BadgePosition(end: -25),
+      position: badgePosition,
       child: Text(appLocalizations.ooblets),
     );
   }
