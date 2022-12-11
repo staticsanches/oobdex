@@ -46,11 +46,16 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
 
   final _mutex = Mutex();
 
-  T? _loadedData;
+  WeakReference<T>? _loadedData;
   var _status = ApiFetcherStatus.notLoaded;
 
   @override
-  ApiFetcherStatus get status => _status;
+  ApiFetcherStatus get status {
+    if (_loadedData?.target == null) {
+      _status = ApiFetcherStatus.notLoaded;
+    }
+    return _status;
+  }
 
   @override
   Future<T> fetch() async {
@@ -70,7 +75,7 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
   }
 
   Future<T> _fetch() async {
-    var data = _loadedData;
+    var data = _loadedData?.target;
     if (data != null) {
       return data; // data already loaded
     }
@@ -84,28 +89,28 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
   }
 
   Future<T?> _fetchFromCache() async {
-    var data = _loadedData;
+    var data = _loadedData?.target;
     if (data != null) {
       return data; // data already loaded
     }
 
     data = await GetIt.I<ApiCacheService>().fetch(type, id);
     if (data != null) {
-      _loadedData = data;
+      _loadedData = WeakReference(data);
       _status = ApiFetcherStatus.loadedFromCache;
     }
     return data;
   }
 
   Future<T> _fetchFromRemote() async {
-    var data = _loadedData;
+    var data = _loadedData?.target;
     if (data != null) {
       return data; // data already loaded
     }
 
     data = await GetIt.I<ApiRemoteService>().fetch(type, id);
 
-    _loadedData = data;
+    _loadedData = WeakReference(data);
     _status = ApiFetcherStatus.loadedFromRemote;
 
     // Store the retrieved data in persistent cache
@@ -116,12 +121,34 @@ class _ApiFetcher<T extends ApiData> implements ApiFetcher<T> {
 }
 
 class _ApiHiveService implements ApiCacheService {
+  final _boxMutex = ReadWriteMutex();
   final _mutexMap = <ApiDataType, ReadWriteMutex>{};
+
+  final _boxByType = <ApiDataType, LazyBox>{};
 
   String _boxName(ApiDataType type) => '${type.name}ApiCacheBox';
 
   ReadWriteMutex _mutex(ApiDataType type) =>
       _mutexMap[type] ??= ReadWriteMutex();
+
+  Future<LazyBox<T>> _lazyBox<T extends ApiData>(ApiDataType<T> type) async {
+    var box = _boxByType[type] as LazyBox<T>?;
+    if (box != null) {
+      return box;
+    }
+    await _boxMutex.acquireWrite();
+    try {
+      box = _boxByType[type] as LazyBox<T>?;
+      if (box != null) {
+        return box;
+      }
+      box = await Hive.openLazyBox<T>(_boxName(type));
+      _boxByType[type] = box;
+      return box;
+    } finally {
+      _boxMutex.release();
+    }
+  }
 
   @override
   Future<void> store<T extends ApiData>(T data) async {
@@ -129,12 +156,8 @@ class _ApiHiveService implements ApiCacheService {
     final mutex = _mutex(type);
     await mutex.acquireWrite();
     try {
-      final box = await Hive.openLazyBox<T>(_boxName(type));
-      try {
-        await box.put(data.id, data);
-      } finally {
-        await box.close();
-      }
+      final box = await _lazyBox(type);
+      await box.put(data.id, data);
     } finally {
       mutex.release();
     }
@@ -145,12 +168,8 @@ class _ApiHiveService implements ApiCacheService {
     final mutex = _mutex(type);
     await mutex.acquireRead();
     try {
-      final box = await Hive.openLazyBox<T>(_boxName(type));
-      try {
-        return await box.get(id);
-      } finally {
-        await box.close();
-      }
+      final box = await _lazyBox(type);
+      return await box.get(id);
     } finally {
       mutex.release();
     }
@@ -161,12 +180,10 @@ class _ApiHiveService implements ApiCacheService {
     final mutex = _mutex(type);
     await mutex.acquireWrite();
     try {
-      final box = await Hive.openLazyBox<T>(_boxName(type));
-      try {
-        await box.clear();
-      } finally {
-        await box.close();
-      }
+      final box = await _lazyBox(type);
+      _boxByType.remove(type);
+      await box.clear();
+      await box.close();
     } finally {
       mutex.release();
     }
