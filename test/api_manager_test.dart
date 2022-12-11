@@ -208,21 +208,6 @@ void main() {
       await location.fetchImage(),
       predicate((ApiImage image) => image.id == location.id),
     );
-
-    expect(
-      location.fetchOoblets(),
-      emitsInOrder(
-        location.oobletsIDs
-            .map((id) => predicate((Ooblet ooblet) => ooblet.id == id)),
-      ),
-    );
-
-    expect(
-      location.fetchItems(),
-      emitsInOrder(
-        location.itemsIDs.map((id) => predicate((Item item) => item.id == id)),
-      ),
-    );
   });
 
   test('Check api call for AllLocations', () async {
