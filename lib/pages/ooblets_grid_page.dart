@@ -1,5 +1,5 @@
 import 'package:badges/badges.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 
 import '../hooks/hooks.dart';
 import '../models/api_data.dart';
@@ -10,6 +10,7 @@ import '../widgets/caught_status_toggle.dart';
 import '../widgets/clickable_card.dart';
 import '../widgets/ooblets_filter.dart';
 import '../widgets/retry_fetch_widget.dart';
+import 'ooblet_page.dart';
 
 class OobletsGridPage extends HookWidget {
   const OobletsGridPage({super.key});
@@ -60,17 +61,19 @@ class _Title extends HookWidget {
 
     final BadgePosition badgePosition;
     if (oobletsLenght < 10) {
-      badgePosition = const BadgePosition(end: -25);
+      badgePosition = BadgePosition.custom(end: -25);
     } else if (oobletsLenght < 100) {
-      badgePosition = const BadgePosition(end: -30);
+      badgePosition = BadgePosition.custom(end: -30);
     } else {
-      badgePosition = const BadgePosition(end: -35);
+      badgePosition = BadgePosition.custom(end: -35);
     }
 
     return Badge(
-      toAnimate: false,
+      badgeAnimation: const BadgeAnimation.slide(toAnimate: false),
       badgeContent: Text('$oobletsLenght'),
-      badgeColor: Theme.of(context).colorScheme.primaryContainer,
+      badgeStyle: BadgeStyle(
+        badgeColor: Theme.of(context).colorScheme.primaryContainer,
+      ),
       position: badgePosition,
       child: Text(appLocalizations.ooblets),
     );
@@ -118,6 +121,10 @@ class _OobletCard extends HookWidget {
       alignment: Alignment.center,
       children: [
         ClickableCard(
+          onTap: () => Navigator.of(context).pushNamed(
+            OobletPage.routeName,
+            arguments: oobletWithVariant.ooblet,
+          ),
           margin: const EdgeInsets.all(4),
           child: Column(
             children: [
@@ -188,7 +195,7 @@ class _FilterButton extends HookWidget {
         onPressed: onPressed,
         icon: Badge(
           showBadge: withFilters,
-          position: const BadgePosition(top: 0, end: 0),
+          position: BadgePosition.custom(top: 0, end: 0),
           child: const Icon(Icons.filter_list),
         ),
       ),

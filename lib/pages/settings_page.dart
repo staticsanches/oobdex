@@ -55,7 +55,7 @@ class _ClearCacheButton extends HookWidget {
           ));
         } catch (_) {
           messenger.showSnackBar(SnackBar(
-            backgroundColor: theme.errorColor,
+            backgroundColor: theme.colorScheme.error,
             content: Text(appLocalizations.clearCacheFail),
           ));
         }
@@ -93,7 +93,7 @@ class _ClearUserDataButton extends HookWidget {
                   ));
                 } catch (_) {
                   messenger.showSnackBar(SnackBar(
-                    backgroundColor: theme.errorColor,
+                    backgroundColor: theme.colorScheme.error,
                     content: Text(appLocalizations.clearUserDataFail),
                   ));
                 }

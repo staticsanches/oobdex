@@ -14,6 +14,7 @@ export '../utils/breakpoints.dart';
 part 'use_app_localizations.dart';
 part 'use_dispatch.dart';
 part 'use_responsive_value.dart';
+part 'use_route_arguments.dart';
 part 'use_selector.dart';
 part 'use_store.dart';
 part 'use_tap_gesture_recognizer.dart';

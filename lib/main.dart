@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'pages/about_page.dart';
 import 'pages/home_page.dart';
+import 'pages/ooblet_page.dart';
 import 'redux/redux.dart';
 import 'utils/api.dart';
 import 'utils/api_version_service.dart';
@@ -66,6 +67,7 @@ class OobdexApp extends StatelessWidget {
         routes: {
           HomePage.routeName: (_) => const HomePage(),
           AboutPage.routeName: (_) => const AboutPage(),
+          OobletPage.routeName: (_) => const OobletPage(),
         },
       ),
     );

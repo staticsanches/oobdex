@@ -28,7 +28,7 @@ class AboutPage extends HookWidget {
                   const SizedBox(height: 40),
                   Text(
                     appLocalizations.attribution,
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 10),
                   const LocalizedValue(
@@ -60,7 +60,7 @@ class _AboutDefaultText extends HookWidget {
       textAlign: TextAlign.center,
       textScaleFactor: 1.3,
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyMedium,
         children: [
           const TextSpan(text: 'An '),
           const TextSpan(
@@ -102,7 +102,7 @@ class _AttributionDefaultText extends HookWidget {
       textAlign: TextAlign.center,
       textScaleFactor: 1.15,
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyMedium,
         children: [
           const TextSpan(
             text: 'The information used was based on the content of the ',
