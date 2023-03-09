@@ -1,3 +1,5 @@
+@Timeout(Duration(minutes: 1))
+
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -402,8 +404,8 @@ void main() {
   });
 
   test('Check api call for Move', () async {
-    final fetcher =
-        ApiManager.instance.fetcher(ApiDataType.move, 'drizzle_drop');
+    final fetcher = ApiManager.instance
+        .fetcher(ApiDataType.move, 'angkze_consolation_deflation');
     expect(fetcher.status, ApiFetcherStatus.notLoaded);
 
     final move = await fetcher.fetch();
@@ -459,8 +461,8 @@ void main() {
   });
 
   test('Check api call for moveImage', () async {
-    final fetcher =
-        ApiManager.instance.fetcher(ApiDataType.moveImage, 'flora_flip');
+    final fetcher = ApiManager.instance
+        .fetcher(ApiDataType.moveImage, 'bittle_capoeira_copy');
     expect(fetcher.status, ApiFetcherStatus.notLoaded);
 
     final image = await fetcher.fetch();
